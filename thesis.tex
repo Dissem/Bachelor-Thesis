@@ -1,0 +1,46 @@
+\documentclass{bfh}
+
+\title{Bachelor Thesis}
+\subtitle{An Android Client for Bitmessage}
+\author{Christian Basler}
+\tutor{Kai Brünnler}
+\date{\today}
+
+\begin{document}
+  \maketitle
+
+  \tableofcontents
+  \newpage
+
+  \section{Introduction}
+
+  \subsection{Current state -- why is it bad?}
+  Until recently there was not mobile client for the Bitmessage protocol, and the client that turned up since is very wasteful to the devices resources, draining the battery in little time. The alternative is to use an e-mail relay server, but this means to give up the private key to this server and end-to-end encryption is much more difficult to achieve. Therefore this might not be a viable option, especially if you can't run your own server.
+
+  \subsection{How should it be?}
+  We need mobile Bitmessage clients that allows the user to choose their levels of convenience, privacy and resource hunger. There will always be trade-offs between needed traffic, battery use and privacy, and for each user the answer might look slightly different.
+
+  \subsection{Why is it hard to do?}
+  Bitmessage is very wasteful with resources by design. All messages are being sent to and stored on all nodes, and to protect the network proof of work (POW) is required for all objects that are distributed. The protocol wasn't developed with mobile users in mind, and while smartphones are getting more and more powerful,\footnote{Four cores is the state of the art with high end devices now, and there are even quite a few devices out there sporting eight cores.} there is at least the issue of battery use to watch out for, and most users have limited traffic on their data plan.
+
+  \subsection{Why me, and how do I intend to do it?}
+  I have seven years of experience developing Java applications, and was programming Android apps from the moment I had my ``Android Dev Phone 1''. As I developed Jabit, a Java implementation of the Bitmessage client, as my last project, I also have great knowledge about the Bitmessage protocol.
+
+  There are a few optimisations that I intend to do:
+  \begin{itemize}
+    \item Connect to only one reliable node instead of eight random nodes. This should reduce battery usage, but yields some risk if the node is compromised. Also, the node must forward all messages to all connected mobile clients instead of the default eight random nodes.
+    \item Don't save objects we can't decrypt. We can solely save their hashes, but this means we're using the network without supporting it. This also might be an attack vector.
+    \item Only connect to the network if we're on Wi-Fi and charging. This means of course that we'll only receive messages when we're connected with a Wi-Fi and charging.
+  \end{itemize}
+  Of course every option has its own drawbacks, so they will be configurable. As for the POW: Jabit highly optimises its calculation, which might be enough for modern smartphones.
+
+  Further optimisations might introduce a server component that might do
+  \begin{itemize}
+    \item POW
+    \item Request public keys, requiring us to give up some anonymity towards the server.
+    \item Inform the client about new messages sent to its addresses. This would mean to give up our anonymity towards the server in the best case (which isn't supported by the protocol yet), towards the whole network (which is somewhat supported), or give up the private key to the server (which is just a big NOPE).
+  \end{itemize}
+
+
+
+\end{document}
