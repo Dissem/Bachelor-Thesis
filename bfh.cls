@@ -21,6 +21,7 @@
 \RequirePackage[utf8]{inputenc}
 \RequirePackage{graphicx}
 \RequirePackage{color}
+\RequirePackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \RequirePackage{lmodern}
 \RequirePackage{url}
 \RequirePackage{lastpage}
@@ -48,7 +49,6 @@
 \RequirePackage{tabularx}
 \RequirePackage{wrapfig}
 \RequirePackage{ifthen}
-\RequirePackage[usenames,dvipsnames,svgnames]{xcolor}
 \RequirePackage{hyperref}
 \RequirePackage{listings}
 \RequirePackage{attachfile}

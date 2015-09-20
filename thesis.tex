@@ -41,6 +41,36 @@
     \item Inform the client about new messages sent to its addresses. This would mean to give up our anonymity towards the server in the best case (which isn't supported by the protocol yet), towards the whole network (which is somewhat supported), or give up the private key to the server (which is just a big NOPE).
   \end{itemize}
 
+  \subsection{Jabit Architecture}
+  Jabit follows the Ports and Adapters architecture. There is a domain module which contains all the data types and most parts of the protocol implementation, and provides several ports, to which adapters can be attached. Adapters include the data repositories, network code and, more recently, cryptography (see BC vs. SC).
+
+  (TODO: image)
+  
+  \section{Part 1 -- Naive Implementation}
+  
+  The naive implementation attempts to use the Jabit Bitmessage library as it is, with as little mobile optimizations as possible.
+
+  \subsection{Unexpected Problems}
+  Most problems can be summarized as this: Android builds on the Java language, but not on the Java platform.
+  
+  \subsubsection{Bouncy Castle vs. Spongy Castle}
+  Jabit heavily relies on the Bouncy Castle library for all things encryption. Unfortunately, Android ships with a broken version of Bouncy Castle. Even worse, when building an Android app the toolchain just discards any Bouncy Castle dependencies in favor of the built-in, broken version.
+
+  Some people recognized this problem, and built a fork of Bouncy Castle, called Spongy Castle. It basically just replaces “Bouncy” with “Spongy” wherever necessary, so it doesn’t get discarded during the build process. This works fine and is quite easily done. Unfortunately, this doesn’t work on the Desktop.
+
+  The Oracle JVM requires Security Providers to be signed, which is done for Bouncy Castle builds, but not so for the Spongy derivate. As forking Jabit wasn’t an option, the whole Security part had to be refactored in an exchangeable module, and implemented twice, in both a bouncy and a spongy manifestation.
+
+  \subsubsection{JDBC}
+  Android has its own API to access the included SQLite database. While it’s a nice, easy to use API, the Android team didn’t deem it necessary to support JDBC, which is the Java standard API to connect to databases.
+
+  There is an open source project attempting to implement a JDBC driver for Android’s SQLite database called SQLDroid, which looked very promising. Unfortunately, it lacks essential features, such as returning the automatically generated key of an inserted row. Even worse, it doesn't have the courtesy of throwing a NotImplementedException for missing features, instead it just does nothing and returns null where a result is required.
+
+  Unfortunately, discovering SQLDroid was unfit for the job took more time than reimplementing all repositories using the Android database API. As they were already implemented as adapters, no change was necessary on the Jabit library.
+
+  \subsection{Expected Problems that Weren't}
+  \subsubsection{Proof of Work}
+  Due to the fact that modern smartphones tend to have faster processors than cheap personal computers, proof of work seems to be reasonably fast on those devices.
+
 
 
 \end{document}
