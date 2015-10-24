@@ -58,12 +58,12 @@
 
   Some people recognized this problem, and built a fork of Bouncy Castle, called Spongy Castle. It basically just replaces “Bouncy” with “Spongy” wherever necessary, so it doesn’t get discarded during the build process. This works fine and is quite easily done. Unfortunately, this doesn’t work on the Desktop.
 
-  The Oracle JVM requires Security Providers to be signed, which is done for Bouncy Castle builds, but not so for the Spongy derivate. As forking Jabit wasn’t an option, the whole Security part had to be refactored in an exchangeable module, and implemented twice, in both a bouncy and a spongy manifestation.
+  The Oracle JVM requires Security Providers to be signed, which is done for Bouncy Castle builds, but not so for the Spongy derivation. As forking Jabit wasn’t an option, the whole Security part had to be refactored in an exchangeable module, and implemented twice, in both a bouncy and a spongy manifestation.
 
   \subsubsection{JDBC}
   Android has its own API to access the included SQLite database. While it’s a nice, easy to use API, the Android team didn’t deem it necessary to support JDBC, which is the Java standard API to connect to databases.
 
-  There is an open source project attempting to implement a JDBC driver for Android’s SQLite database called SQLDroid, which looked very promising. Unfortunately, it lacks essential features, such as returning the automatically generated key of an inserted row. Even worse, it doesn't have the courtesy of throwing a NotImplementedException for missing features, instead it just does nothing and returns null where a result is required.
+  There is an open source project attempting to implement a JDBC driver for Android’s SQLite database called SQLDroid,\footnote{\url{https://github.com/SQLDroid/SQLDroid}} which looked very promising. Unfortunately, it lacks essential features, such as returning the automatically generated key of an inserted row. Even worse, it doesn't have the courtesy of throwing a NotImplementedException for missing features, instead it just does nothing and returns null where a result is required.
 
   Unfortunately, discovering SQLDroid was unfit for the job took more time than reimplementing all repositories using the Android database API. As they were already implemented as adapters, no change was necessary on the Jabit library.
 
@@ -71,6 +71,8 @@
   \subsubsection{Proof of Work}
   Due to the fact that modern smartphones tend to have faster processors than cheap personal computers, proof of work seems to be reasonably fast on those devices.
 
-
+  \subsection{Other Challenges}
+  \subsubsection{Synchronization API}
+  \subsubsection{Contact Provider}
 
 \end{document}
