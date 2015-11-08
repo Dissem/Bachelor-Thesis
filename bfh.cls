@@ -84,7 +84,8 @@
 %	\oldtoc
 %	\newpage
 %}
-\newcommand*{\tutor}[1]{\gdef\@tutor{#1}}
+\newcommand*{\advisor}[1]{\gdef\@advisor{#1}}
+\newcommand*{\expert}[1]{\gdef\@expert{#1}}
 \renewcommand{\maketitle} {
 	\begin{titlepage}
         \newlength{\unitlengthtmp}
@@ -114,7 +115,8 @@
             \begin{vfill}
                 \begin{tabularx}{\textwidth}{lX}
                 \textsf{Author} & \@author\\ 
-                \textsf{Tutor}  & \@tutor\\
+                \textsf{Advisor}  & \@advisor\\
+                \textsf{Expert} & \@expert\\
 %                \textsf{Expert} & \textsf\DozentA\\
 %                \textsf{Studiengang} & \textsf{\Studiengang}\vspace{5pt}\\
 %                \textsf{Autoren} & \textsf\AutorA\\ 
