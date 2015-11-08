@@ -28,13 +28,13 @@
 
   \subsection{What is Metadata?}
 
-  While encryption technology like PGP or S/MIME provides a secure way to protect content from prying eyes, ever since the revelations of whistleblower Edward Snowdens we learned that metadata --- most notably information about who communicates with whom --- is equally interesting and much easier to analyse.\cite{guardian:metadata}
+  While encryption technology like PGP or S/MIME provides a secure way to protect content from prying eyes, ever since the revelations of whistle-blower Edward Snowden we learned that metadata --- most notably information about who communicates with whom --- is equally interesting and much easier to analyse.\cite{guardian:metadata}
 
   \subsection{How Can We Hide Metadata?}
 
   With e-mail, all metadata is plain text, even for encrypted messages. We might be able to encrypt the connection to the e-mail provider, and they might or might not encrypt their connections to other providers. We can only hope that both our and the recipient's e-mail provider are both trustworthy and competent. Can we really expect that from something we get for free?
 
-  With Bitmessage we send a message to a sufficiently large number of participants, with the intended recipient among them. Content is encrypted such that only the person in possesion of the private key can decrypt it. All participants try to do this in order to find their messages.
+  With Bitmessage we send a message to a sufficiently large number of participants, with the intended recipient among them. Content is encrypted such that only the person in possession of the private key can decrypt it. All participants try to do this in order to find their messages.
 
   \subsection{What is Bitmessage}
   
@@ -42,7 +42,7 @@
   
   Objects are encrypted using a public key. Every client tries to decrypt each object using its private keys, processing the ones where it succeeds.
   
-  A bit advantage of Bitmessage is its inherent key management. The address contains a hash of the public key, and retrieving said key is part of the protocol.
+  A big advantage of Bitmessage is its inherent key management. The address contains a hash of the public key, and retrieving said key is part of the protocol.
 
   (TODO)\newpage
 
@@ -86,7 +86,7 @@
   Most problems can be summarised as this: Android builds on the Java language, but not on the Java platform.
   
   \subsubsection{Bouncy Castle vs. Spongy Castle}
-  Jabit heavily relies on the Bouncy Castle library for all things encryption. Unfortunately, Android ships with a broken version of Bouncy Castle. Even worse, when building an Android app the toolchain just discards any Bouncy Castle dependencies in favor of the built-in, broken version.
+  Jabit heavily relies on the Bouncy Castle library for all things encryption. Unfortunately, Android ships with a broken version of Bouncy Castle. Even worse, when building an Android app the toolchain just discards any Bouncy Castle dependencies in favour of the built-in, broken version.
 
   Some people recognised this problem, and built a fork of Bouncy Castle, called Spongy Castle. It basically just replaces “Bouncy” with “Spongy” wherever necessary, so it doesn’t get discarded during the build process. This works fine and is quite easily done. Unfortunately, this doesn’t work on the Desktop.
 
