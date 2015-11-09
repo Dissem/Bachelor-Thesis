@@ -53,7 +53,7 @@
   We need mobile Bitmessage clients that allows the user to choose their levels of convenience, privacy and resource hunger. There will always be trade-offs between needed traffic, battery use and privacy, and for each user the answer might look slightly different.
 
   \subsection{Why is it hard to do?}
-  Bitmessage is very wasteful with resources by design. All messages are being sent to and stored on all nodes, and to protect the network proof of work (POW) is required for all objects that are distributed. The protocol wasn't developed with mobile users in mind, and while smartphones are getting increasingly powerful, there is at least the issue of battery use to watch out for, and most users have limited traffic on their data plan.
+  Bitmessage is very wasteful with resources by design. All messages are being sent to and stored on all nodes, and to protect the network proof of work is required for all objects that are distributed. The protocol wasn't developed with mobile users in mind, and while smartphones are getting increasingly powerful, there is at least the issue of battery use to watch out for, and most users have limited traffic on their data plan.
 
   \subsection{Why me, and how do I intend to do it?}
   I have seven years of experience developing Java applications, and was programming Android apps from the moment I had my ``Android Dev Phone 1''. As I developed Jabit, a Java implementation of the Bitmessage client, as my last project, I also have great knowledge about the Bitmessage protocol.
@@ -64,11 +64,11 @@
     \item Don't save objects we can't decrypt. We can solely save their hashes, but this means we're using the network without supporting it. This also might be an attack vector.
     \item Only connect to the network if we're on Wi-Fi and charging. This means of course that we'll only receive messages when we're connected with a Wi-Fi and charging.
   \end{itemize}
-  Of course every option has its own drawbacks, so they will be configurable. As for the POW: Jabit highly optimises its calculation, which might be enough for modern smartphones.
+  Of course every option has its own drawbacks, so they will be configurable. As for the proof of work: Jabit highly optimises its calculation, which might be enough for modern smartphones.
 
   Further optimisations might introduce a server component that might do
   \begin{itemize}
-    \item POW
+    \item Proof of work
     \item Request public keys, requiring us to give up some anonymity towards the server.
     \item Inform the client about new messages sent to its addresses. This would mean to give up our anonymity towards the server in the best case (which isn't supported by the protocol yet), towards the whole network (which is somewhat supported), or give up the private key to the server (which is just a big NOPE).
   \end{itemize}
@@ -76,8 +76,10 @@
   \subsection{Jabit Architecture}
   Jabit follows the Ports and Adapters architecture. There is a domain module which contains all the data types and most parts of the protocol implementation, and provides several ports, to which adapters can be attached. Adapters include the data repositories, network code and, more recently, cryptography (see BC vs. SC).
 
-  \includegraphics[width=\textwidth]{images/ports_and_adapters.pdf}
-  
+  \begin{center}
+    \includegraphics[width=0.5 \textwidth]{images/ports_and_adapters.pdf}
+  \end{center}
+
   \section{Naive Implementation}
   
   The naive implementation attempts to use the Jabit Bitmessage library as it is, with as little mobile optimisations as possible.
@@ -104,6 +106,14 @@
 
   \subsubsection{Proof of Work}
   Although modern smartphones tend to have faster processors than cheap personal computers, proof of work for sending a public key takes around 15 minutes on a device with four cores at 2.5 GHz. Even worse, during this time it uses so much power that the device discharges even when connected to a power supply.
+
+  \section{Android Specific Challenges}
+  \subsection{Application Lifecycle}
+  As with any good mobile system, Android doesn't hesitate to end all threads of an application running in background, in order to save resources. Consequently anything that should be kept alive -- network connections and proof of work come to mind -- need special treatment. This is done through foreground services. The networking part and proof of work hence needed to be moved into separate services. While not difficult, it needed some research to find out how it should best be done in our case.
+  
+  \begin{center}
+    \includegraphics[width=0.6 \textwidth]{images/services.pdf}
+  \end{center}
 
   \section{Optimisations}
   \subsection{Sync Adapters}
