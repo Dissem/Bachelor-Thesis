@@ -1,5 +1,6 @@
 \documentclass{bfh}
 \usepackage[numbers]{natbib}
+\usepackage[nohyperlinks]{acronym}
 
 \title{Bachelor Thesis}
 \subtitle{An Android Client for Bitmessage}
@@ -8,12 +9,12 @@
 \expert{Daniel Voisard}
 \date{\today}
 
+\newcommand{\abbr}[1]{\textbf{#1}}
+
 \begin{document}
   \maketitle
 
   \tableofcontents
-
-  \listoffigures
 
   \newpage
   \section*{Abstract}
@@ -21,6 +22,17 @@
   Even if we use encryption, we reveal a lot about ourselves in the metadata we produce. Bitmessage prevents this by distributing a message in a way that it's not possible to find out which was the intended recipient.
   
   This thesis aims to develop an Android client for the Bitmessage protocol.
+  
+  \section*{Abbreviations}
+  \begin{acronym}[Bash]
+    \acro{POW}    {Proof of Work}
+    \acro{PGP}    {Pretty Goot Privacy}
+    \acro{MIME}   {Multipurpose Internet Mail Extensions}
+    \acro{S/MIME} {Secure/\acs{MIME}}
+    \acro{JDBC}   {Java Database Connectivity}
+    \acro{API}    {Application Programming Interface}
+    \acro{DOS}    {Denial of Service}
+  \end{acronym}
 
   \newpage
 
@@ -28,7 +40,7 @@
 
   \subsection{What is Metadata?}
 
-  While encryption technology like PGP or S/MIME provides a secure way to protect content from prying eyes, ever since the revelations of whistle-blower Edward Snowden we learned that metadata --- most notably information about who communicates with whom --- is equally interesting and much easier to analyse.\cite{guardian:metadata}
+  While encryption technology like \ac{PGP} or \acs{S/MIME} provides a secure way to protect content from prying eyes, ever since the revelations of whistle-blower Edward Snowden we learned that metadata --- most notably information about who communicates with whom --- is equally interesting and much easier to analyse.\cite{guardian:metadata}
 
   \subsection{How Can We Hide Metadata?}
 
@@ -44,7 +56,22 @@
   
   A big advantage of Bitmessage is its inherent key management. The address contains a hash of the public key, and retrieving said key is part of the protocol.
 
-  (TODO)\newpage
+  \subsubsection{Structure of a Bitmessage Object}
+  Objects are distributed throughout the network.
+
+  \includegraphics[width=\textwidth]{images/object.pdf}
+
+  To prevent malicious flooding of the network and, to a lesser extent, spam, a nonce needs to be found such that a specific hash over the whole object represents a number lower than a calculated threshold. This is called \ac{POW}.
+
+  The object header consists of the expiration time, object type and version, stream number and the actual payload. (Streams ar an optimisation feature of the protocol, so it stays somewhat scalable if many people start using Bitmessage.)
+  
+  The payload contains the actual data, depending on the message type.
+  
+  The signature covers everything except the nonce and is encrypted along with the payload, thus covering the unencrypted payload.
+  
+  Note: public keys of older addresses are an exception as they aren't encrypted.
+
+(TODO)\newpage
 
   \subsection{Current state -- why is it bad?}
   Until recently there was no mobile client for Bitmessage, and the client that turned up since is very wasteful to the devices resources, draining the battery in little time. The alternative is to use an e-mail relay server, but this means to give up the private key to this server and end-to-end encryption is much more difficult to achieve. Therefore this might not be a viable option, especially if you can't run your own server.
@@ -53,7 +80,7 @@
   We need mobile Bitmessage clients that allows the user to choose their levels of convenience, privacy and resource hunger. There will always be trade-offs between needed traffic, battery use and privacy, and for each user the answer might look slightly different.
 
   \subsection{Why is it hard to do?}
-  Bitmessage is very wasteful with resources by design. All messages are being sent to and stored on all nodes, and to protect the network proof of work is required for all objects that are distributed. The protocol wasn't developed with mobile users in mind, and while smartphones are getting increasingly powerful, there is at least the issue of battery use to watch out for, and most users have limited traffic on their data plan.
+  Bitmessage is very wasteful with resources by design. All messages are being sent to and stored on all nodes, and to protect the network \ac{POW} is required for all objects that are distributed. The protocol wasn't developed with mobile users in mind, and while smartphones are getting increasingly powerful, there is at least the issue of battery use to watch out for, and most users have limited traffic on their data plan.
 
   \subsection{Why me, and how do I intend to do it?}
   I have seven years of experience developing Java applications, and was programming Android apps from the moment I had my ``Android Dev Phone 1''. As I developed Jabit, a Java implementation of the Bitmessage client, as my last project, I also have great knowledge about the Bitmessage protocol.
@@ -64,17 +91,17 @@
     \item Don't save objects we can't decrypt. We can solely save their hashes, but this means we're using the network without supporting it. This also might be an attack vector.
     \item Only connect to the network if we're on Wi-Fi and charging. This means of course that we'll only receive messages when we're connected with a Wi-Fi and charging.
   \end{itemize}
-  Of course every option has its own drawbacks, so they will be configurable. As for the proof of work: Jabit highly optimises its calculation, which might be enough for modern smartphones.
+  Of course every option has its own drawbacks, so they will be configurable. As for the \ac{POW}: Jabit highly optimises its calculation, which might be enough for modern smartphones.
 
   Further optimisations might introduce a server component that might do
   \begin{itemize}
-    \item Proof of work
+    \item \acl{POW}
     \item Request public keys, requiring us to give up some anonymity towards the server.
-    \item Inform the client about new messages sent to its addresses. This would mean to give up our anonymity towards the server in the best case (which isn't supported by the protocol yet), towards the whole network (which is somewhat supported), or give up the private key to the server (which is just a big NOPE).
+    \item Inform the client about new messages sent to its addresses. This would mean to give up our anonymity towards the server in the best case (which isn't supported by the protocol yet), towards the whole network (which is somewhat supported), or give up the private key to the server (which, for many users, is unacceptable).
   \end{itemize}
 
   \subsection{Jabit Architecture}
-  Jabit follows the Ports and Adapters architecture. There is a domain module which contains all the data types and most parts of the protocol implementation, and provides several ports, to which adapters can be attached. Adapters include the data repositories, network code and, more recently, cryptography (see BC vs. SC).
+  Jabit follows the Ports and Adapters architecture. There is a domain module which contains all the data types and most parts of the protocol implementation, and provides several ports, to which adapters can be attached. Adapters include the data repositories, network code and, more recently, cryptography (see \ref{subsec:bcvssc} \nameref{subsec:bcvssc}{}).
 
   \begin{center}
     \includegraphics[width=0.5 \textwidth]{images/ports_and_adapters.pdf}
@@ -88,29 +115,30 @@
   Most problems can be summarised as this: Android builds on the Java language, but not on the Java platform.
   
   \subsubsection{Bouncy Castle vs. Spongy Castle}
-  Jabit heavily relies on the Bouncy Castle library for all things encryption. Unfortunately, Android ships with a broken version of Bouncy Castle. Even worse, when building an Android app the toolchain just discards any Bouncy Castle dependencies in favour of the built-in, broken version.
+  \label{subsec:bcvssc}
+  Jabit heavily relies on Bouncy Castle, a very popular encryption library.\cite{bouncy} Unfortunately, Android ships with a broken version of Bouncy Castle. Even worse, when building an Android app the toolchain just discards any Bouncy Castle dependencies in favour of the built-in, broken version.
 
   Some people recognised this problem, and built a fork of Bouncy Castle, called Spongy Castle. It basically just replaces “Bouncy” with “Spongy” wherever necessary, so it doesn’t get discarded during the build process. This works fine and is quite easily done. Unfortunately, this doesn’t work on the Desktop.
 
   The Oracle JVM requires Security Providers to be signed, which is done for Bouncy Castle builds, but not so for the Spongy derivation. As forking Jabit wasn’t an option, the whole Security part had to be refactored in an exchangeable module, and implemented twice, in both a bouncy and a spongy manifestation.
 
   \subsubsection{JDBC}
-  Android has its own API to access the included SQLite database. While it’s a nice, easy to use API, the Android team didn’t deem it necessary to support JDBC, which is the Java standard API to connect to databases.
+  Android has its own API to access the included SQLite database. While it’s a nice, easy to use \ac{API}, the Android team didn’t deem it necessary to support \ac{JDBC}, which is the Java standard API to connect to databases.
 
-  There is an open source project attempting to implement a JDBC driver for Android’s SQLite database called SQLDroid,\footnote{\url{https://github.com/SQLDroid/SQLDroid}} which looked very promising. Unfortunately, it lacks essential features, such as returning the automatically generated key of an inserted row. Even worse, it doesn't have the courtesy of throwing a NotImplementedException for missing features, instead it just does nothing and returns null where a result is required.
+  There is an open source project attempting to implement a \ac{JDBC} driver for Android’s SQLite database called SQLDroid,\footnote{\url{https://github.com/SQLDroid/SQLDroid}} which looked very promising. Unfortunately, it lacks essential features, such as returning the automatically generated key of an inserted row. Even worse, it doesn't have the courtesy of throwing a NotImplementedException for missing features, instead it just does nothing and returns null where a result is required, making debugging unnecessarily complicated.
 
-  Unfortunately, discovering SQLDroid was unfit for the job took more time than reimplementing all repositories using the Android database API. As they were already implemented as adapters, no change was necessary on the Jabit library.
+  Unfortunately, discovering SQLDroid was unfit for the job took more time than reimplementing all repositories using the Android database API. As they were already implemented as adapters, no change was necessary on the Jabit library. Some changes were made in the futile attempt to use JDBC though, most of them only to be reverted later on.
 
   \subsection{Expected Problems}
-  Those problems were to be expected and need to be fixed in part II.
+  Those problems were to be expected and need to be fixed as part of this thesis.
 
-  \subsubsection{Proof of Work}
-  Although modern smartphones tend to have faster processors than cheap personal computers, proof of work for sending a public key takes around 15 minutes on a device with four cores at 2.5 GHz. Even worse, during this time it uses so much power that the device discharges even when connected to a power supply.
+  \subsubsection{\acl{POW}}
+  Although modern smartphones tend to have faster processors than cheap personal computers, \ac{POW} for sending a public key takes around 15 minutes on a device with four cores at 2.5 GHz. Even worse, during this time it uses so much power that the device discharges even when connected to a power supply.
 
   \section{Android Specific Challenges}
   \subsection{Application Lifecycle}
-  As with any good mobile system, Android doesn't hesitate to end all threads of an application running in background, in order to save resources. Consequently anything that should be kept alive -- network connections and proof of work come to mind -- need special treatment. This is done through foreground services. The networking part and proof of work hence needed to be moved into separate services. While not difficult, it needed some research to find out how it should best be done in our case.
-  
+  As with any good mobile system, Android doesn't hesitate to end all threads of an application running in background, in order to save resources. Consequently anything that should be kept alive -- network connections and \ac{POW} come to mind -- need special treatment. This is done through foreground services. The networking part and \ac{POW} hence needed to be moved into separate services. While not difficult, it needed some research to find out how it should best be done in our case.
+
   \begin{center}
     \includegraphics[width=0.6 \textwidth]{images/services.pdf}
   \end{center}
@@ -123,6 +151,18 @@
 
   As Jabit is a Java library, it was trivial to create a server application using Spring Boot and Jabit. It turned out though that it's necessary to limit the number of connections in a Bitmessage server, therefore connections are now being severed after 12 hours or when a limit of 100 connections is reached.
 
+  \subsection{Server Side \acl{POW}}
+  To reduce power consumption and possibly reduce the time to send a message, \ac{POW} can be calculated by the synchronisation server. This feature needs some changes on both server and client, but only minor tweaks in the protocol.
+  
+  \subsubsection{Basic Idea}
+  The server accepts messages without \ac{POW}, which it then will compute and fill in, and then relay that message. Of course this would leave the server extremely vulnerable to \ac{DOS} attacks -- an attacker could just send a bunch of messages and the server would be busy the rest of its life.
+  
+  We need some sort of authentication.
+
+  \subsubsection{Protocol Tweaks}
+  Fortunately, Bitmessage has very secure authentication built in: every message is signed by a private key. We'll just send a message to the server that contains the actual message as content. All nonce fields are set to zero. Ther server checks if the sender is on a white list and then calculates the nonce and relays the complete message.
+
+  \newpage
   \bibliographystyle{plain}
   \bibliography{bibliography}
 
