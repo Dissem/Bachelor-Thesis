@@ -40,7 +40,11 @@
 
   \subsection{What is Metadata?}
 
-  While encryption technology like \ac{PGP} or \acs{S/MIME} provides a secure way to protect content from prying eyes, ever since the revelations of whistle-blower Edward Snowden we learned that metadata --- most notably information about who communicates with whom --- is equally interesting and much easier to analyse.\cite{guardian:metadata}
+  Metadata is information about data we create or access. This could be the websites we visit, or the sender, recipient, time, which mail client was used, maybe even where it was sent from and what anti-virus is used. The volume and quality of metadata greatly depends on the kind of data and the software used to create it.
+
+  While encryption technology like \ac{PGP} or \acs{S/MIME} provides a secure way to protect content from prying eyes, it can't hide the header information: sender, recipient, subject and possibly much more.
+
+  Ever since the revelations of whistle-blower Edward Snowden we learned that metadata --- most notably information about who communicates with whom --- is equally interesting and much easier to analyse than the actual content.\cite{guardian:metadata}
 
   \subsection{How Can We Hide Metadata?}
 
@@ -56,20 +60,40 @@
   
   A big advantage of Bitmessage is its inherent key management. The address contains a hash of the public key, and retrieving said key is part of the protocol.
 
-  \subsubsection{Structure of a Bitmessage Object}
-  Objects are distributed throughout the network.
+
+  \subsubsection{Bitmessage Commands}
+
+  Commands are messages between nodes, used to initialize a connection and exchange information about the network and available objects.
+
+  \includegraphics[width=\textwidth]{images/command.pdf}
+
+  The \textbf{magic} is a number to mark the beginning of a command. It is set to \texttt{0xE9BEB4D9}, but \textit{could} be changed for test clients so they don't inadvertently connect to the real network.
+
+  A \textbf{command} defines how the payload looks like and what the node is supposed to do with it. The commands used by the Bitmessage protocol are \textit{version}, \textit{verack}, \textit{addr}, \textit{inv}, \textit{getdata} and \textit{object}. Their uses are specified in the Bitmessage Protocol Specification.\cite{wiki:protocol}
+
+  \textbf{Size} defines how many bytes of payload need to be read.
+
+  The \textbf{checksum} is used to prevent transmission errors.
+
+  \textbf{Payload} is the data that belongs to a command. It could be anything from empty to an object containing a message.
+
+
+  \subsubsection{Bitmessage Objects}
+  Objects are distributed throughout the network using the "OBJECT" command. With exception of some legacy objects, they are signed and encrypted.
 
   \includegraphics[width=\textwidth]{images/object.pdf}
 
-  To prevent malicious flooding of the network and, to a lesser extent, spam, a nonce needs to be found such that a specific hash over the whole object represents a number lower than a calculated threshold. This is called \ac{POW}.
+  To prevent malicious flooding of the network and, to a lesser extent, spam, a \textbf{nonce} needs to be found such that a specific hash over the whole object represents a number lower than a calculated threshold. This is called \ac{POW}.
 
-  The object header consists of the expiration time, object type and version, stream number and the actual payload. (Streams ar an optimisation feature of the protocol, so it stays somewhat scalable if many people start using Bitmessage.)
+  The object \textbf{header} consists of the expiration time, object type and version, stream number and the actual payload. (Streams ar an optimisation feature of the protocol, so it stays somewhat scalable if many people start using Bitmessage.)
   
-  The payload contains the actual data, depending on the message type.
+  The \textbf{payload} contains the actual data, depending on the message type.
   
-  The signature covers everything except the nonce and is encrypted along with the payload, thus covering the unencrypted payload.
-  
-  Note: public keys of older addresses are an exception as they aren't encrypted.
+  The \textbf{signature} covers everything except the nonce and is encrypted along with the payload, thus covering the unencrypted payload.
+
+
+  \subsubsection{Encryption}
+
 
 (TODO)\newpage
 
@@ -116,7 +140,7 @@
   
   \subsubsection{Bouncy Castle vs. Spongy Castle}
   \label{subsec:bcvssc}
-  Jabit heavily relies on Bouncy Castle, a very popular encryption library.\cite{bouncy} Unfortunately, Android ships with a broken version of Bouncy Castle. Even worse, when building an Android app the toolchain just discards any Bouncy Castle dependencies in favour of the built-in, broken version.
+  Jabit heavily relies on Bouncy Castle, a very popular open source encryption library.\cite{bouncy} Unfortunately, Android ships with a broken version of Bouncy Castle. Even worse, when building an Android app the toolchain just discards any Bouncy Castle dependencies in favour of the built-in, broken version.
 
   Some people recognised this problem, and built a fork of Bouncy Castle, called Spongy Castle. It basically just replaces “Bouncy” with “Spongy” wherever necessary, so it doesn’t get discarded during the build process. This works fine and is quite easily done. Unfortunately, this doesn’t work on the Desktop.
 
@@ -137,7 +161,7 @@
 
   \section{Android Specific Challenges}
   \subsection{Application Lifecycle}
-  As with any good mobile system, Android doesn't hesitate to end all threads of an application running in background, in order to save resources. Consequently anything that should be kept alive -- network connections and \ac{POW} come to mind -- need special treatment. This is done through foreground services. The networking part and \ac{POW} hence needed to be moved into separate services. While not difficult, it needed some research to find out how it should best be done in our case.
+  As with any good mobile system, Android doesn't hesitate to end all threads of an application running in background, in order to save resources. Consequently anything that should be kept alive -- network connections and \ac{POW} come to mind -- needs special treatment. This is done through foreground services. The networking part and \ac{POW} hence needed to be moved into separate services. While not difficult, it needed some research to find out how it should best be done in our case.
 
   \begin{center}
     \includegraphics[width=0.6 \textwidth]{images/services.pdf}
@@ -145,22 +169,44 @@
 
   \section{Optimisations}
   \subsection{Sync Adapters}
-  Android provides an API that can vastly reduce battery usage for apps that regularly update data over the internet. The system triggers synchronisation, so it can optimise its sleep modes. Imagine otherwise, 15 apps synchronising every 15 minutes, one after the other. The device would never sleep.
+  Android provides an API that can vastly reduce battery usage for apps that regularly update data over the internet. The system triggers synchronisation, so it can optimise its sleep modes. Imagine otherwise, 15 apps synchronising every 15 minutes, one after the other. In the worst case scenario the device would need to wake up every minute, synchronize and could barely go back to sleep before the next app wants to synchronize.
 
   Although it's not intended, synchronisation can be done within the Bitmessage protocol without any modifications. What is needed is a trusted node that's always available and therefore best run on a proper server. On successful connection all new messages are being exchanged, so we just need to connect, wait until new messages were exchanged, and then disconnect.
 
   As Jabit is a Java library, it was trivial to create a server application using Spring Boot and Jabit. It turned out though that it's necessary to limit the number of connections in a Bitmessage server, therefore connections are now being severed after 12 hours or when a limit of 100 connections is reached.
 
   \subsection{Server Side \acl{POW}}
-  To reduce power consumption and possibly reduce the time to send a message, \ac{POW} can be calculated by the synchronisation server. This feature needs some changes on both server and client, but only minor tweaks in the protocol.
-  
-  \subsubsection{Basic Idea}
-  The server accepts messages without \ac{POW}, which it then will compute and fill in, and then relay that message. Of course this would leave the server extremely vulnerable to \ac{DOS} attacks -- an attacker could just send a bunch of messages and the server would be busy the rest of its life.
-  
-  We need some sort of authentication.
+  To reduce power consumption and possibly reduce the time to send a message, \ac{POW} can be calculated by the synchronisation server. This feature needs some changes on both server and client, and some custom extensions to the protocol.
 
-  \subsubsection{Protocol Tweaks}
-  Fortunately, Bitmessage has very secure authentication built in: every message is signed by a private key. We'll just send a message to the server that contains the actual message as content. All nonce fields are set to zero. Ther server checks if the sender is on a white list and then calculates the nonce and relays the complete message.
+  \subsubsection{Initial Idea}
+  The server accepts messages without \ac{POW}, which it will compute and fill in, and then relay that message. Of course this would leave the server extremely vulnerable to \ac{DOS} attacks -- an attacker could just send a bunch of messages and the server would be busy the rest of its life.
+
+  Fortunately, Bitmessage has very secure authentication built in: every message is signed by a private key, and can be securely verified by anyone who knows the sender's address. We'll just send a message to the server that contains the actual message as content. All nonce fields are set to zero. Ther server checks if the sender is on a white list and then calculates the nonce and relays the complete message.
+
+  A broadcast message would be best qualified for this task, as the client wouldn't have to be configured with a recipient address. The server is configured with a list of addresses that are allowed to request \ac{POW} and the client just needs to know the server's IP address or host name.
+
+  \subsubsection{Acknowledging Issues}
+  Unfortunately this approach has some issues. For one, sending a message would be very different using this method, requiring some major changes on the client side. Moreover, it would be impossible to generate acknowledgements.
+
+  Acknowledgements are sent from the receiving client to notify the writer that the message was received. Think of it as a stamped addressed envelope delivered with a letter. The acknowledgement is part of the encrypted message the server can't read, so it couldn't calculate its \ac{POW}.
+
+  Jabit doesn't support acknowledgements yet, but it would be a pity to prevent it by design.
+
+  \subsubsection{\ac{POW} Protocol}
+  Much of the planned design can be reused -- the encryption used by broadcasts, signing the messages -- but we need a wholly separate protocol, with some extra roundtrips to the server. Now the server just receives the parts needed for \ac{POW} calculation: a hash and a target value.
+
+  When the nonce is found, it's saved on the database. The client will regularly poll for it (e.g. during synchronization cycles) until it retrieves the nonce.
+
+  \includegraphics[width=\textwidth]{images/server_pow_protocol.pdf}
+
+  For this feature, a new command was introduced, which needs to be implemented on both server and client. It has the same structure as any Bitmessage command, and \textit{custom} in the command field. As payload it contains a signed and encrypted block, containing the following structure:
+
+TODO: graphical description of the custom POW message
+
+TODO: describe the structure of bitmessage commands in the protocol chapter
+
+  \section{Social and Ethical Consequences}
+  
 
   \newpage
   \bibliographystyle{plain}
