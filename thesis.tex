@@ -29,6 +29,7 @@
     \acro{PGP}    {Pretty Goot Privacy}
     \acro{MIME}   {Multipurpose Internet Mail Extensions}
     \acro{S/MIME} {Secure/\acs{MIME}}
+    \acro{CPU}    {Central Processing Unit}
     \acro{JDBC}   {Java Database Connectivity}
     \acro{API}    {Application Programming Interface}
     \acro{DOS}    {Denial of Service}
@@ -40,25 +41,25 @@
 
   \subsection{What is Metadata?}
 
-  Metadata is information about data we create or access. This could be the websites we visit, or the sender, recipient, time, which mail client was used, maybe even where it was sent from and what anti-virus is used. The volume and quality of metadata greatly depends on the kind of data and the software used to create it.
+  Metadata is information about data we create or access. This could be the websites we visit, what tv programmes we watch, or the sender, recipient, time, which mail client was used, maybe even where it was sent from and what anti-virus is used. The volume and quality of metadata greatly depends on the kind of data and the software used to create it.
 
   While encryption technology like \ac{PGP} or \acs{S/MIME} provides a secure way to protect content from prying eyes, it can't hide the header information: sender, recipient, subject and possibly much more.
 
-  Ever since the revelations of whistle-blower Edward Snowden we learned that metadata --- most notably information about who communicates with whom --- is equally interesting and much easier to analyse than the actual content.\cite{guardian:metadata}
+  Ever since the revelations of whistleblower Edward Snowden we learned that metadata --- most notably information about who communicates with whom --- is equally interesting and much easier to analyse than the actual content.\cite{guardian:metadata}
 
   \subsection{How Can We Hide Metadata?}
 
-  With e-mail, all metadata is plain text, even for encrypted messages. We might be able to encrypt the connection to the e-mail provider, and they might or might not encrypt their connections to other providers. We can only hope that both our and the recipient's e-mail provider are both trustworthy and competent. Can we really expect that from something we get for free?
+  With e-mail, all metadata is plain text, even for encrypted messages. We might be able to encrypt the connection to the e-mail provider, and they might or might not encrypt their connections to other providers. We can only hope that both our and the recipient's e-mail provider are both trustworthy and competent. Can we really expect that from something we get for free? And can we be sure they're not forced to release what they know to some agency?\cite{yale:nsl}
 
   With Bitmessage we send a message to a sufficiently large number of participants, with the intended recipient among them. Content is encrypted such that only the person in possession of the private key can decrypt it. All participants try to do this in order to find their messages.
 
   \subsection{What is Bitmessage}
   
-  Bitmessage is a peer to peer protocol building a mesh network among the participating clients. Every client tries to maintain multiple connections and has a full copy of every current object.
+  Bitmessage is a peer to peer protocol building a mesh network among the participating clients. Every client tries to maintain multiple connections to other network nodes and has a full copy of every current object.
   
   Objects are encrypted using a public key. Every client tries to decrypt each object using its private keys, processing the ones where it succeeds.
   
-  A big advantage of Bitmessage is its inherent key management. The address contains a hash of the public key, and retrieving said key is part of the protocol.
+  A big advantage of Bitmessage is its inherent key management. The address contains a hash of the public key, and retrieving said key is an integral part of the protocol.
 
 
   \subsubsection{Bitmessage Commands}
@@ -79,7 +80,7 @@
 
 
   \subsubsection{Bitmessage Objects}
-  Objects are distributed throughout the network using the "OBJECT" command. With exception of some legacy objects, they are signed and encrypted.
+  Objects are distributed throughout the network using the "object" command. With exception of some legacy objects, they are signed and encrypted.
 
   \includegraphics[width=\textwidth]{images/object.pdf}
 
@@ -91,20 +92,22 @@
   
   The \textbf{signature} covers everything except the nonce and is encrypted along with the payload, thus covering the unencrypted payload.
 
+  There are four different types of objects in the Bitmessage protocol: \textit{getpubkey} is used to request a public key to some address, \textit{pubkey} contains said public key, \textit{msg} is a typical person-to-person message, and \textit{broadcast} is a message that is broadcast to anyone who subscribed to the sending address --- which needs to be known in order to subscribe.
+
 
   \subsubsection{Encryption}
 
 
 (TODO)\newpage
 
-  \subsection{Current state -- why is it bad?}
+  \subsection{Current state -- what is missing?}
   Until recently there was no mobile client for Bitmessage, and the client that turned up since is very wasteful to the devices resources, draining the battery in little time. The alternative is to use an e-mail relay server, but this means to give up the private key to this server and end-to-end encryption is much more difficult to achieve. Therefore this might not be a viable option, especially if you can't run your own server.
 
   \subsection{How should it be?}
   We need mobile Bitmessage clients that allows the user to choose their levels of convenience, privacy and resource hunger. There will always be trade-offs between needed traffic, battery use and privacy, and for each user the answer might look slightly different.
 
   \subsection{Why is it hard to do?}
-  Bitmessage is very wasteful with resources by design. All messages are being sent to and stored on all nodes, and to protect the network \ac{POW} is required for all objects that are distributed. The protocol wasn't developed with mobile users in mind, and while smartphones are getting increasingly powerful, there is at least the issue of battery use to watch out for, and most users have limited traffic on their data plan.
+  Bitmessage is very wasteful with resources by design. All messages are being sent to and stored on all nodes, and to protect the network \ac{POW} is required for all objects that are distributed, meaning some very \acs{CPU}-heavy calculations need to be done. The protocol wasn't developed with mobile users in mind, and while smartphones are getting increasingly powerful, there is at least the issue of battery use to watch out for, and many users have limited traffic on their data plan.
 
   \subsection{Why me, and how do I intend to do it?}
   I have seven years of experience developing Java applications, and was programming Android apps from the moment I had my ``Android Dev Phone 1''. As I developed Jabit, a Java implementation of the Bitmessage client, as my last project, I also have great knowledge about the Bitmessage protocol.
@@ -117,14 +120,22 @@
   \end{itemize}
   Of course every option has its own drawbacks, so they will be configurable. As for the \ac{POW}: Jabit highly optimises its calculation, which might be enough for modern smartphones.
 
-  Further optimisations might introduce a server component that might do
+  Further optimisations might introduce a server component that \textit{might} do
   \begin{itemize}
     \item \acl{POW}
     \item Request public keys, requiring us to give up some anonymity towards the server.
     \item Inform the client about new messages sent to its addresses. This would mean to give up our anonymity towards the server in the best case (which isn't supported by the protocol yet), towards the whole network (which is somewhat supported), or give up the private key to the server (which, for many users, is unacceptable).
   \end{itemize}
 
-  \subsection{Jabit Architecture}
+  To find out what is actually necessary, a naive impementation will be done first.
+
+  \subsection{The Jabit Bitmessage Library}
+  Jabit war developed as a preparing project for this thesis.
+
+TODO
+
+
+  \subsubsection{Architecture}
   Jabit follows the Ports and Adapters architecture. There is a domain module which contains all the data types and most parts of the protocol implementation, and provides several ports, to which adapters can be attached. Adapters include the data repositories, network code and, more recently, cryptography (see \ref{subsec:bcvssc} \nameref{subsec:bcvssc}{}).
 
   \begin{center}
@@ -133,25 +144,25 @@
 
   \section{Naive Implementation}
   
-  The naive implementation attempts to use the Jabit Bitmessage library as it is, with as little mobile optimisations as possible.
+  The naive implementation attempts to use the Jabit Bitmessage library as it is, with as little mobile optimisations as possible. The plan was to either discard or improve it afterwards. Fortunately improvement was possible.
 
   \subsection{Unexpected Problems}
-  Most problems can be summarised as this: Android builds on the Java language, but not on the Java platform.
+  Most problems can be summarised as this: Android builds on the Java language, but not on the Java platform. While the programming language is the same and most libraries can be used without any restrictions, there are some subtle differences that make a programmer's life hard --- some due to the limited resources of a mobile handset, some due to design decicions made by the Android development team.
   
   \subsubsection{Bouncy Castle vs. Spongy Castle}
   \label{subsec:bcvssc}
-  Jabit heavily relies on Bouncy Castle, a very popular open source encryption library.\cite{bouncy} Unfortunately, Android ships with a broken version of Bouncy Castle. Even worse, when building an Android app the toolchain just discards any Bouncy Castle dependencies in favour of the built-in, broken version.
+  Jabit heavily relies on Bouncy Castle, a very popular open source encryption library.\cite{bouncy} Unfortunately, Android ships with a broken version of Bouncy Castle. Even worse, when building an Android app, the toolchain just discards any Bouncy Castle dependencies in favour of the built-in, broken version.
 
   Some people recognised this problem, and built a fork of Bouncy Castle, called Spongy Castle. It basically just replaces “Bouncy” with “Spongy” wherever necessary, so it doesn’t get discarded during the build process. This works fine and is quite easily done. Unfortunately, this doesn’t work on the Desktop.
 
-  The Oracle JVM requires Security Providers to be signed, which is done for Bouncy Castle builds, but not so for the Spongy derivation. As forking Jabit wasn’t an option, the whole Security part had to be refactored in an exchangeable module, and implemented twice, in both a bouncy and a spongy manifestation.
+  The Oracle JVM requires Security Providers to be signed, which is done for Bouncy Castle builds, but not so for the Spongy derivation. As forking Jabit wasn’t an option, the whole cryptography part had to be refactored into an exchangeable module, and implemented twice, in both a bouncy and a spongy manifestation.
 
   \subsubsection{JDBC}
   Android has its own API to access the included SQLite database. While it’s a nice, easy to use \ac{API}, the Android team didn’t deem it necessary to support \ac{JDBC}, which is the Java standard API to connect to databases.
 
-  There is an open source project attempting to implement a \ac{JDBC} driver for Android’s SQLite database called SQLDroid,\footnote{\url{https://github.com/SQLDroid/SQLDroid}} which looked very promising. Unfortunately, it lacks essential features, such as returning the automatically generated key of an inserted row. Even worse, it doesn't have the courtesy of throwing a NotImplementedException for missing features, instead it just does nothing and returns null where a result is required, making debugging unnecessarily complicated.
+  There is an open source project attempting to implement a \ac{JDBC} driver for Android’s SQLite database called SQLDroid,\footnote{\url{https://github.com/SQLDroid/SQLDroid}} which looked very promising. Unfortunately, it lacks essential features, such as returning the automatically generated key of an inserted row. Even worse, it doesn't have the courtesy of throwing a NotImplementedException for missing features, instead it just does nothing and returns null where a result is required, making debugging unnecessarily tedious.
 
-  Unfortunately, discovering SQLDroid was unfit for the job took more time than reimplementing all repositories using the Android database API. As they were already implemented as adapters, no change was necessary on the Jabit library. Some changes were made in the futile attempt to use JDBC though, most of them only to be reverted later on.
+  Unfortunately, discovering SQLDroid was unfit for the job took more time than reimplementing all repositories using the Android database API. As they were already implemented as adapters, no change was necessary on the Jabit library. Many changes were made in the futile attempt to use JDBC though, most of them only to be reverted later on.
 
   \subsection{Expected Problems}
   Those problems were to be expected and need to be fixed as part of this thesis.
