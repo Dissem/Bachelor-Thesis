@@ -18,21 +18,41 @@
 
   \newpage
   \section*{Abstract}
+  If you don't want anyone snooping in your e-mails you might already encrypt your correspondence. But you still can't hide who you're writing to, and your e-mail client might even reveal much more about you, your computer, and the software you use. Bitmessage attempts to solve all this, but up until now there was no practical way to use it on mobile phones, which might be a downside when you're on the run.
 
-  Even if we use encryption, we reveal a lot about ourselves in the metadata we produce. Bitmessage prevents this by distributing a message in a way that it's not possible to find out which was the intended recipient.
-  
-  This thesis aims to develop an Android client for the Bitmessage protocol.
-  
+  Bitmessage provides some unique challenges for mobile clients. Its users tend to be bordering on paranoia, or as often might really be tracked. The protocol is as wasteful as a hen; it needs both immense amounts of traffic and a lot of \acs{CPU} time. It works by distributing every message to every client, so they can pick up the ones they can decrypt with the available private keys. To protect the network from malicious flooding, a \acl{POW} is required, which is done by calculating a partial hash collision. So typically you'd want as many \acs{CPU} cores as possible, no shortage of electricity and a flat rate on internet access --- not quite the perfect basis for a mobile app.
+
+  Apart from those protocol specific difficulties, Android\texttrademark{} has some challenges of its own. For example, to preserve memory and battery power, the \acl{OS} might kill practically any process at any time, especially those that just sit in the background and process incoming network objects. Then there are some major Java dependencies missing in the Android VM, most notably \acs{JDBC}, widely used for accessing databases. And finally, there are a lot of very different devices out there, some with processors hardly fast enough to browse the web and others as strong as some desktop computers.
+
+  There were two main optimisations, both optional. Firstly, Android provides a highly optimized method to synchronize data with a server. Fortunately it was possible to leverage this while still using the official Bitmessage protocol. Secondly, for weaker phones an option to let a server do the \acl{POW} was added. For both options the user must give up some of his anonymity towards the server --- everything has its price.
+
+  You can get more information about the app at \url{https://dissem.ch/abit}
+
+  \begin{center}
+    \includegraphics[width=0.4 \textwidth]{images/QR_abit_webpage.pdf}
+  \end{center}
+
+
+  \newpage
+  \section*{Trademarks}
+  Android is a trademark of Google Inc.\\
+  Oracle and Java are registered trademarks of Oracle and/or its affiliates.\\
+  Other names may be trademarks of their respective owners.
+
   \section*{Abbreviations}
-  \begin{acronym}[Bash]
-    \acro{POW}    {Proof of Work}
-    \acro{PGP}    {Pretty Goot Privacy}
-    \acro{MIME}   {Multipurpose Internet Mail Extensions}
+  \begin{acronym}[S/MIME ]
+    \acro{CPU}    {central processing unit}
+    \acro{GPU}    {graphics processing unit}
+    \acro{POW}    {proof of work}
+    \acro{OS}     {operating system}
+    \acro{PGP}    {Pretty Good Privacy}
+    \acro{MIME}   {multipurpose internet mail extensions}
     \acro{S/MIME} {Secure/\acs{MIME}}
-    \acro{CPU}    {Central Processing Unit}
-    \acro{JDBC}   {Java Database Connectivity}
-    \acro{API}    {Application Programming Interface}
-    \acro{DOS}    {Denial of Service}
+    \acro{JDBC}   {Java database connectivity}
+    \acro{SQL}    {structured query language}
+    \acro{NoSQL}  {Not only \acs{SQL}}
+    \acro{API}    {application programming interface}
+    \acro{DOS}    {denial of service}
   \end{acronym}
 
   \newpage
@@ -58,47 +78,34 @@
   Bitmessage is a peer to peer protocol building a mesh network among the participating clients. Every client tries to maintain multiple connections to other network nodes and has a full copy of every current object.
   
   Objects are encrypted using a public key. Every client tries to decrypt each object using its private keys, processing the ones where it succeeds.
-  
+
+  \subsubsection{Advantages}
   A big advantage of Bitmessage is its inherent key management. The address contains a hash of the public key, and retrieving said key is an integral part of the protocol.
 
+  And the selling point of course is that everything is encrypted and signed, and there is next to no metadata an attacker could use.
 
-  \subsubsection{Bitmessage Commands}
+  .
 
-  Commands are messages between nodes, used to initialize a connection and exchange information about the network and available objects.
+  .
 
-  \includegraphics[width=\textwidth]{images/command.pdf}
+  TODO
 
-  The \textbf{magic} is a number to mark the beginning of a command. It is set to \texttt{0xE9BEB4D9}, but \textit{could} be changed for test clients so they don't inadvertently connect to the real network.
+  \subsubsection{Disadvantages}
+  Of course the protocol uses a lot of resources. The traffic problem could be somewhat managed by splitting it into streams\cite{wiki:stream}, but the \ac{POW} is required in order to protect the network.
 
-  A \textbf{command} defines how the payload looks like and what the node is supposed to do with it. The commands used by the Bitmessage protocol are \textit{version}, \textit{verack}, \textit{addr}, \textit{inv}, \textit{getdata} and \textit{object}. Their uses are specified in the Bitmessage Protocol Specification.\cite{wiki:protocol}
+  As you might guess, the protocol doesn't scale well. As the user base grows and traffic increases, it might be too much for weaker clients (read mobile phones) to process. Again, streams are said to be the solution, but if there's a big surge in network usage the implementations might not be ready. Unfortunately for this project, a successful mobile client might be responsible for that surge.
 
-  \textbf{Size} defines how many bytes of payload need to be read.
+  If somehow your private key gets into wrong hands, they might be able to read every message you ever received, even if you deleted them locally. Nobody can prevent an entity from collecting all encrypted objects just in case the might be of value some day. They can't read the messages you've \textit{sent} though, unless they got your recipient's private key as well.
 
-  The \textbf{checksum} is used to prevent transmission errors.
+  \subsubsection{Risks}
+  As when you decide to use Tor, a software for enabling anonymous communication formerly known as 'The Onion Router', you might be flagged by some security agency as a possible threat.\cite{wired:tor} By itself this isn't necessarily a problem, but if you're a journalist it might be a risk for your informants, and combined with oder red flags you might be prevented from flying in or into the U.S.A.
 
-  \textbf{Payload} is the data that belongs to a command. It could be anything from empty to an object containing a message.
+  .
 
+  .
 
-  \subsubsection{Bitmessage Objects}
-  Objects are distributed throughout the network using the "object" command. With exception of some legacy objects, they are signed and encrypted.
+  TODO
 
-  \includegraphics[width=\textwidth]{images/object.pdf}
-
-  To prevent malicious flooding of the network and, to a lesser extent, spam, a \textbf{nonce} needs to be found such that a specific hash over the whole object represents a number lower than a calculated threshold. This is called \ac{POW}.
-
-  The object \textbf{header} consists of the expiration time, object type and version, stream number and the actual payload. (Streams ar an optimisation feature of the protocol, so it stays somewhat scalable if many people start using Bitmessage.)
-  
-  The \textbf{payload} contains the actual data, depending on the message type.
-  
-  The \textbf{signature} covers everything except the nonce and is encrypted along with the payload, thus covering the unencrypted payload.
-
-  There are four different types of objects in the Bitmessage protocol: \textit{getpubkey} is used to request a public key to some address, \textit{pubkey} contains said public key, \textit{msg} is a typical person-to-person message, and \textit{broadcast} is a message that is broadcast to anyone who subscribed to the sending address --- which needs to be known in order to subscribe.
-
-
-  \subsubsection{Encryption}
-
-
-(TODO)\newpage
 
   \subsection{Current state -- what is missing?}
   Until recently there was no mobile client for Bitmessage, and the client that turned up since is very wasteful to the devices resources, draining the battery in little time. The alternative is to use an e-mail relay server, but this means to give up the private key to this server and end-to-end encryption is much more difficult to achieve. Therefore this might not be a viable option, especially if you can't run your own server.
@@ -130,17 +137,91 @@
   To find out what is actually necessary, a naive impementation will be done first.
 
   \subsection{The Jabit Bitmessage Library}
-  Jabit war developed as a preparing project for this thesis.
+  Jabit has been developed as a preparing project for this thesis. It implements (most of) the Bitmessage protocol in Java and can therefore easily be used both in server applications as well as Android apps.
 
-TODO
+  Almost all alternative clients are based on PyBitmessage, which is somewhat inconvenient as it always requires PyBitmessage to run along with the client. This isn't really a problem on desktop computers, but might render creating  an easily deployable server application slightly more difficult, and is quite impractical on mobile devices.
 
 
   \subsubsection{Architecture}
-  Jabit follows the Ports and Adapters architecture. There is a domain module which contains all the data types and most parts of the protocol implementation, and provides several ports, to which adapters can be attached. Adapters include the data repositories, network code and, more recently, cryptography (see \ref{subsec:bcvssc} \nameref{subsec:bcvssc}{}).
+  Jabit follows the Ports and Adapters architecture. There is a domain module which contains all the data types and most parts of the protocol implementation, and provides several ports, to which adapters can be attached. Adapters include the data repositories, \ac{POW}, network code and, more recently, cryptography (see \ref{subsec:bcvssc} \nameref{subsec:bcvssc}{}).
 
   \begin{center}
     \includegraphics[width=0.5 \textwidth]{images/ports_and_adapters.pdf}
   \end{center}
+
+  While there was hope to reuse the \acs{JDBC} implementation of the \textit{repositories}, it was clear that at some point someone might want to use a \acs{NoSQL} database or some other means of storage. Unfortunately, an Android specific implementation came first, see \ref{subsec:jdbc} \nameref{subsec:jdbc}.
+
+  The \textit{\acl{POW}} adapter exists in a single- and a multithreading version. The first mainly exists to show the concept, while the second one currently is always used to do the calculation, albeit remotely on a server or wrapped in some Android compatibility code. A future immplementation that uses the \acs{GPU}, which sometimes have thousands of cores, might be magnitudes faster and could easily be implemented to replace the current worker.
+
+  The \textit{network} code was put in an adapter as some Android specific tweaks were expected. This turned out to be wrong, but it didn't slow down development and might facilitate a future rewrite of the network code.
+
+  The \textit{cryptography} adapter was another fine example why you should never rely on static helper classes. Rewriting the code to use an adapter was a pain and it wouldn't have been complicated to do it right the first time.
+
+
+  \section{The Bitmessage Protocol}
+
+  \subsection{Bitmessage Commands}
+
+  Commands are messages between nodes, used to initialize a connection and exchange information about the network and available objects.
+
+  \includegraphics[width=\textwidth]{images/command.pdf}
+
+  The \textbf{magic} is a number to mark the beginning of a command. It is set to \texttt{0xE9BEB4D9}, but \textit{could} be changed for test clients so they don't inadvertently connect to the real network.
+
+  A \textbf{command} defines how the payload looks like and what the node is supposed to do with it. The commands used by the Bitmessage protocol are \textit{version}, \textit{verack}, \textit{addr}, \textit{inv}, \textit{getdata} and \textit{object}. Their uses are specified in the Bitmessage Protocol Specification.\cite{wiki:protocol}
+
+  \textbf{Size} defines how many bytes of payload need to be read.
+
+  The \textbf{checksum} is used to prevent transmission errors.
+
+  \textbf{Payload} is the data that belongs to a command. It could be anything from empty to an object containing a message.
+
+
+  \subsection{Bitmessage Objects}
+  Objects are distributed throughout the network using the "object" command. With exception of some legacy objects, they are signed and encrypted.
+
+  \includegraphics[width=\textwidth]{images/object.pdf}
+
+  To prevent malicious flooding of the network and, to a lesser extent, spam, a \textbf{nonce} needs to be found such that a specific hash over the whole object represents a number lower than a calculated threshold. This is called \ac{POW}.
+
+  The object \textbf{header} consists of the expiration time, object type and version, stream number and the actual payload. (Streams ar an optimisation feature of the protocol, so it stays somewhat scalable if many people start using Bitmessage.)
+  
+  The \textbf{payload} contains the actual data, depending on the message type.
+  
+  The \textbf{signature} covers everything except the nonce and is encrypted along with the payload, thus covering the unencrypted payload.
+
+  There are four different types of objects in the Bitmessage protocol: \textit{getpubkey} is used to request a public key to some address, \textit{pubkey} contains said public key, \textit{msg} is a typical person-to-person message, and \textit{broadcast} is a message that is broadcast to anyone who subscribed to the sending address --- which needs to be known in order to subscribe.
+
+
+  \subsection{Encryption}
+  \label{subsec:encryption}
+  Bitmessage uses elliptic curve cryptography for both signing and encryption. The math behind it is rather complicated, yet bases on the established principle to use a mathematical operation that has an inverse that is magnitudes more complicated than the operation itself. Instead of the typically used huge prime numbers, a point on an elliptic curve is multiplied by a high number.
+
+  Advantages of elliptic curves is the fact that we don't need to search for big primes, but also that the keys can be much smaller while having the same encryption strength.
+
+  The user, let's call her Alice, needs a key pair, consisting of a private key
+$$k$$
+which represents a huge random number, and a public key
+$$K = G k$$
+which represents a point on the agreed on curve -- by default that's \textit{secp256k1} for Bitmessage. Please note that this is not a simple multiplication, but the multiplication of a point along an elliptic curve. $G$ is the starting point for all operations on a specific curve.
+
+  Another user, Bob, knows the public key. To encrypt a message, Bob creates a temporary key pair
+$$r$$
+and
+$$R = G r$$
+He then calculates
+$$K r$$
+uses the resulting Point to encrypt the message by calculating a double SHA-512 hash over the x-coordinate and sends $K$ along with the message.
+
+  When Alice receives the message, she uses the fact that
+$$K r = G k r = G r k = R k$$
+so she just uses $R k$ to decrypt the message.
+
+  The exact method used in Bitmessage is called Elliptic Curve Integrated Encryption Scheme or ECIES, which is described in detail on Wikipedia. \cite{wikipedia:ECC} \cite{wikipedia:ECIES}
+
+  \subsection{\acl{POW}}
+  TODO
+
 
   \section{Naive Implementation}
   
@@ -158,6 +239,7 @@ TODO
   The Oracle JVM requires Security Providers to be signed, which is done for Bouncy Castle builds, but not so for the Spongy derivation. As forking Jabit wasn’t an option, the whole cryptography part had to be refactored into an exchangeable module, and implemented twice, in both a bouncy and a spongy manifestation.
 
   \subsubsection{JDBC}
+  \label{subsec:jdbc}
   Android has its own API to access the included SQLite database. While it’s a nice, easy to use \ac{API}, the Android team didn’t deem it necessary to support \ac{JDBC}, which is the Java standard API to connect to databases.
 
   There is an open source project attempting to implement a \ac{JDBC} driver for Android’s SQLite database called SQLDroid,\footnote{\url{https://github.com/SQLDroid/SQLDroid}} which looked very promising. Unfortunately, it lacks essential features, such as returning the automatically generated key of an inserted row. Even worse, it doesn't have the courtesy of throwing a NotImplementedException for missing features, instead it just does nothing and returns null where a result is required, making debugging unnecessarily tedious.
@@ -212,9 +294,14 @@ TODO
 
   For this feature, a new command was introduced, which needs to be implemented on both server and client. It has the same structure as any Bitmessage command, and \textit{custom} in the command field. As payload it contains a signed and encrypted block, containing the following structure:
 
-TODO: graphical description of the custom POW message
+  \includegraphics[width=\textwidth]{images/custom_message.pdf}
 
-TODO: describe the structure of bitmessage commands in the protocol chapter
+  The custom commands for the proof of work feature are encrypted and signed, including the kind of request or response. The \textit{command} field therefore always says \texttt{ENCRYPTED}. Afterwards comes the \textit{encryption header}, including the initialisation vector (IV), the curve type (should normally be 0x2CA), and the $X$ and $Y$ coordinates of a random public key (see \ref{subsec:encryption} \nameref{subsec:encryption}{}, variable $R$).
+
+  The payload always consists of the initial hash (the base for \ac{POW} calculation) and the kind of request or response. The data field contains the target difficulty for the \texttt{CALCULATE} request, and the calculated nonce for the \texttt{COMPLETE} response. For the \texttt{CALCULATING} response the data contains an emtpy array.
+
+  \section{Comparison to Bitseal}
+
 
   \section{Social and Ethical Consequences}
   
