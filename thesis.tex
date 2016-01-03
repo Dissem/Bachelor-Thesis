@@ -35,6 +35,7 @@
     \acro{API}    {application programming interface}
     \acro{DOS}    {denial of service}
     \acro{nonce}  {number used once}
+    \acro{IP}     {internet protocol}
   \end{acronym}
 
 
@@ -42,7 +43,7 @@
   \section*{Abstract}
   If you don't want anyone snooping in your e-mails you might already encrypt your correspondence. But you still can't hide who you're writing to, and your e-mail client might even reveal much more about you, your computer, and the software you use. Bitmessage attempts to solve all this, but up until now there was no practical way to use it on mobile phones, which might be a downside when you're on the run.
 
-  Bitmessage provides some unique challenges for mobile clients. Its users tend to be bordering on paranoia, or as often might really be tracked. The protocol is as wasteful as a hen; it needs both immense amounts of traffic and a lot of \acs{CPU} time. It works by distributing every message to every client, so they can pick up the ones they can decrypt with the available private keys. To protect the network from malicious flooding, a \acl{POW} is required, which is done by calculating a partial hash collision. So typically you'd want as many \acs{CPU} cores as possible, no shortage of electricity and a flat rate on internet access --- not quite the perfect basis for a mobile app.
+  Bitmessage provides some unique challenges for mobile clients. Its users tend to be bordering on paranoia, or as often might really be tracked. The protocol needs both immense amounts of traffic and a lot of \acs{CPU} time. It works by distributing every message to every client, so they can pick up the ones they can decrypt with the available private keys. To protect the network from malicious flooding, a \acl{POW} is required, which is done by calculating a partial hash collision. So typically you'd want as many \acs{CPU} cores as possible, no shortage of electricity and a flat rate on internet access --- not quite the perfect basis for a mobile app.
 
   Apart from those protocol specific difficulties, Android\texttrademark{} has some challenges of its own. For example, to preserve memory and battery power, the \acl{OS} might kill practically any process at any time, especially those that just sit in the background and process incoming network objects. Then there are some major Java dependencies missing in the Android VM, most notably \acs{JDBC}, widely used for accessing databases. And finally, there are a lot of very different devices out there, some with processors hardly fast enough to browse the web and others as strong as some desktop computers.
 
@@ -99,7 +100,7 @@
   On the usability side, the addresses aren't really human readable, and any method to make it look friendlier would either be complicated to set up or make the client insecure, or both. Then no client yet supports attachments, and there's still some controversy on how to implement them into the protocol. Large attachments wouldn't be possible anyway, due to message size restrictions and \ac{POW}.
 
   \subsubsection{Risks}
-  As when you decide to use Tor, a software for enabling anonymous communication formerly known as 'The Onion Router', you might be flagged by some security agency as a possible threat.\cite{wired:tor} By itself this isn't necessarily a problem, but if you're a journalist it might be a risk for your informants, and combined with oder red flags you might be prevented from flying in or into the U.S.A.
+  As when you decide to use Tor, a software for enabling anonymous communication formerly known as `The Onion Router', you might be flagged by some security agency as a possible threat.\cite{wired:tor} By itself this isn't necessarily a problem, but if you're a journalist it might be a risk for your informants, and combined with oder red flags you might be prevented from flying in or into the U.S.A.
 
   .
 
@@ -139,6 +140,8 @@
   To find out what is actually necessary, a naive impementation will be done first.
 
   \subsection{The Jabit Bitmessage Library}
+  The source code for Jabit can be found at \url{https://github.com/Dissem/Jabit}
+
   Jabit has been developed as a preparing project for this thesis. It implements (most of) the Bitmessage protocol in Java and can therefore easily be used both for server applications as well as Android apps.
 
   Almost all alternative clients are based on PyBitmessage, which is somewhat inconvenient as it always requires PyBitmessage to run along with the client. This isn't really a problem on desktop computers, but might render creating  an easily deployable server application slightly more difficult, and is quite impractical on mobile devices.
@@ -181,7 +184,7 @@
 
 
   \subsection{Bitmessage Objects}
-  Objects are distributed throughout the network using the "object" command. With exception of some legacy objects, they are signed and encrypted.
+  Objects are distributed throughout the network using the ``object'' command. With exception of some legacy objects, they are signed and encrypted.
 
   \includegraphics[width=\textwidth]{images/object.pdf}
 
@@ -319,6 +322,7 @@ do {
 
   It was decided to run all services as separate threads in the same process, which simplifies communication between those services, but has the risk of the whole app crashing if there is an error in a service.
 
+  \subsection{TODO}
 
   \newpage
   \section{Optimisations}
@@ -365,17 +369,46 @@ do {
 
 
   \newpage
-  \section{The Finished App}
+  \section{Artefacts}
+
+  \subsection{The App}
+  The app's source code can be found at \url{https://github.com/Dissem/Abit}
+
+  \subsubsection{User Interface}
+  Abit tries to imitate state of the art e-mail clients. Users of Android's stock mail client should feel right at home.
+
+  \begin{center}
+    \includegraphics[width=0.4 \textwidth]{images/screenshot_drawer_menu.png}
+  \end{center}
+
+  A curiosity might be the `full node' switch at the bottom of the side drawer, which toggles a fully functioning Bitmessage node. As this uses a lot of traffic, the user is warned by default if they activate it on the mobile network.
+
+  \begin{center}
+    \includegraphics[width=0.4 \textwidth]{images/screenshot_warning_dialog.png}
+  \end{center}
+
+  To both remind the user something resource hungry is going on and keep the process alive, an ongoing notification is being shown.
+
+  \begin{center}
+    \includegraphics[width=0.4 \textwidth]{images/screenshot_notification_full_node.png}
+  \end{center}
+
+  \subsubsection{Settings}
+
+  \begin{center}
+    \includegraphics[width=0.8 \textwidth]{images/screenshot_settings.png}
+  \end{center}
 
 
+  \subsection{The Server Component}
+  The server's source code can be found at \url{https://github.com/Dissem/Jabit-Server}
+
+  For the app to be really useful, it relies on a server component. If you don't require the \ac{POW} feature it could be any Bitmessage client that can be accessed over a known \acs{IP} address or host name, but the provided server application is very easy to deploy and, as mentioned, can do \ac{POW} for the mobile client.
+
+  \subsection{Installation}
 
 
-
-
-
-
-
-
+  \subsubsection{Configuration}
 
 
   \newpage
@@ -396,6 +429,8 @@ do {
   As it aims to be a full Bitmessage client as well, Bitseal is more diractly comparable to Abit.
 
   \subsubsection{User Interface}
+  Bitseal 
+
   \subsubsection{Settings}
   \subsubsection{Power Usage}
 
