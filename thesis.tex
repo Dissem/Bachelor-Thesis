@@ -41,13 +41,21 @@
 
   \newpage
   \section*{Abstract}
-  If you don't want anyone snooping in your e-mails you might already encrypt your correspondence. But you still can't hide who you're writing to, and your e-mail client might even reveal much more about you, your computer, and the software you use. Bitmessage attempts to solve all this, but up until now there was no practical way to use it on mobile phones, which might be a downside when you're on the run.
+  If you don't want anyone snooping in your e-mails you might already encrypt your correspondence. But you still can't hide who you're writing to, and your e-mail client might even reveal much more about you, your computer, and the software you use.
 
-  Bitmessage provides some unique challenges for mobile clients. Its users tend to be bordering on paranoia, or as often might really be tracked. The protocol needs both immense amounts of traffic and a lot of \acs{CPU} time. It works by distributing every message to every client, so they can pick up the ones they can decrypt with the available private keys. To protect the network from malicious flooding, a \acl{POW} is required, which is done by calculating a partial hash collision. So typically you'd want as many \acs{CPU} cores as possible, no shortage of electricity and a flat rate on internet access --- not quite the perfect basis for a mobile app.
+  The Bitmessage protocol attempts to solve all this, but up until now there was no practical way to use it on mobile phones. That's where this thesis comes in.
 
-  Apart from those protocol specific difficulties, Android\texttrademark{} has some challenges of its own. For example, to preserve memory and battery power, the \acl{OS} might kill practically any process at any time, especially those that just sit in the background and process incoming network objects. Then there are some major Java dependencies missing in the Android VM, most notably \acs{JDBC}, widely used for accessing databases. And finally, there are a lot of very different devices out there, some with processors hardly fast enough to browse the web and others as strong as some desktop computers.
+  Bitmessage is a peer to peer messaging protocol that builds a mesh network among the participating clients. Each client tries to maintain multiple connections to offer network nodes and has an encrypted copy of every current message.
 
-  There were two main optimisations, both optional. Firstly, Android provides a highly optimized method to synchronize data with a server. Fortunately it was possible to leverage this while still using the official Bitmessage protocol. Secondly, for weaker phones an option to let a server do the \acl{POW} was added. For both options the user must give up some of his anonymity towards the server --- everything has its price.
+  There are some unique challenges for mobile clients. Its users are very privacy conscious. The protocol needs both huge amounts of traffic and a lot of \acs{CPU} time. It works by distributing every message to every client, so they can pick up the ones they can decrypt with the available private keys.
+
+  To protect the network from malicious flooding, a \acl{POW} is required, which is done by calculating a partial hash collision. This is designed to be relatively slow even on Desktop computers.
+
+  So typically you'd want as many \acs{CPU} cores as possible, no shortage of electricity and a flat rate on internet access – not quite the prefect basis for a mobile app.
+
+  Android\texttrademark{} has some challenges, too. To preserve resources, the \acl{OS} might kill any process at any time, especially those in the background that process incoming network objects. Then there are some major Java dependencies missing in the Android VM, most notably \acs{JDBC}, widely used for accessing databases. And finally, the devices differ vastly.
+
+  There were two main optimisations, both optional. Firstly, Android provides a highly optimized method to synchronize data with a server. Fortunately it was possible to leverage this while still using the official Bitmessage protocol. Secondly, an option to let a server do the \acl{POW} was added for weaker phones. For both options the user must give up some of his anonymity towards the server – everything has its price.
 
   You can get more information about the app at \url{https://dissem.ch/abit}
 
@@ -322,7 +330,11 @@ do {
 
   It was decided to run all services as separate threads in the same process, which simplifies communication between those services, but has the risk of the whole app crashing if there is an error in a service.
 
-  \subsection{TODO}
+  \subsection{Play Store}
+  Unfortunately, even 
+
+  TODO
+
 
   \newpage
   \section{Optimisations}
