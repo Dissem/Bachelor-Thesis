@@ -1,6 +1,9 @@
 \documentclass{bfh}
 \usepackage[numbers]{natbib}
 \usepackage[nohyperlinks]{acronym}
+\usepackage[labelformat=empty]{caption}
+\usepackage[rightcaption]{sidecap}
+\usepackage{float}
 
 \title{Bachelor Thesis}
 \subtitle{An Android Client for Bitmessage}
@@ -24,6 +27,7 @@
   \begin{acronym}[S/MIME ]
     \acro{CPU}    {central processing unit}
     \acro{GPU}    {graphics processing unit}
+    \acro{VM}     {virtual machine}
     \acro{POW}    {proof of work}
     \acro{OS}     {operating system}
     \acro{PGP}    {Pretty Good Privacy}
@@ -41,26 +45,27 @@
 
   \newpage
   \section*{Abstract}
-  If you don't want anyone snooping in your e-mails you might already encrypt your correspondence. But you still can't hide who you're writing to, and your e-mail client might even reveal much more about you, your computer, and the software you use.
+  Even if you are encrypting your e-mails, you still can't hide who you're writing to. Your e-mail client might even reveal much more about you, your computer, and the software you use.
 
-  The Bitmessage protocol attempts to solve all this, but up until now there was no practical way to use it on mobile phones. That's where this thesis comes in.
+  Bitmessage solves all this, but up until now there was no practical way to use it on mobile phones. That's where this thesis comes in.
 
-  Bitmessage is a peer to peer messaging protocol that builds a mesh network among the participating clients. Each client tries to maintain multiple connections to offer network nodes and has an encrypted copy of every current message.
+
+  Bitmessage is a peer to peer messaging protocol that builds a mesh network among the participating clients. Each client tries to maintain multiple connections to other network nodes and has an encrypted copy of every current message.
 
   There are some unique challenges for mobile clients. Its users are very privacy conscious. The protocol needs both huge amounts of traffic and a lot of \acs{CPU} time. It works by distributing every message to every client, so they can pick up the ones they can decrypt with the available private keys.
 
-  To protect the network from malicious flooding, a \acl{POW} is required, which is done by calculating a partial hash collision. This is designed to be relatively slow even on Desktop computers.
+  To protect the network from malicious flooding, clients must find a partial hash collision as \acl{POW} in order to send a message. This is designed to be relatively slow even on desktop computers.
 
-  So typically you'd want as many \acs{CPU} cores as possible, no shortage of electricity and a flat rate on internet access – not quite the prefect basis for a mobile app.
+  So typically you'd want as many \acs{CPU} cores as possible, no shortage of power and a flat rate on internet access – a challenge for a mobile app.
 
-  Android\texttrademark{} has some challenges, too. To preserve resources, the \acl{OS} might kill any process at any time, especially those in the background that process incoming network objects. Then there are some major Java dependencies missing in the Android VM, most notably \acs{JDBC}, widely used for accessing databases. And finally, the devices differ vastly.
+  Android\texttrademark{} has some challenges, too. To preserve resources, the \acl{OS} might kill any process at any time, especially those in the background that process incoming network objects. Then there are some major Java dependencies missing in the Android \acs{VM}, most notably \acs{JDBC}, used for accessing databases. And finally, the devices differ vastly processing power. The implementation we propose solves these problems.
 
-  There were two main optimisations, both optional. Firstly, Android provides a highly optimized method to synchronize data with a server. Fortunately it was possible to leverage this while still using the official Bitmessage protocol. Secondly, an option to let a server do the \acl{POW} was added for weaker phones. For both options the user must give up some of his anonymity towards the server – everything has its price.
+  In addition there were two optional optimisations that require a server. First, Android provides a highly optimized method to synchronize data with a server, which we leveraged while still using the official Bitmessage protocol. Secondly, an option to let a server do the \acl{POW} was added for weaker phones. For both options the user must give up some of his anonymity towards the server --- it's their choice.
 
   You can get more information about the app at \url{https://dissem.ch/abit}
 
   \begin{center}
-    \includegraphics[width=0.3 \textwidth]{images/QR_abit_webpage.pdf}
+    \includegraphics[width=0.2 \textwidth]{images/QR_abit_webpage.pdf}
   \end{center}
 
 
@@ -166,7 +171,7 @@
 
   The \textit{\acl{POW}} adapter exists in a single- and a multithreading version. The first mainly exists to show the concept, while the second one currently is always used to do the calculation, albeit remotely on a server or wrapped in some Android compatibility code. A future immplementation that uses the \acs{GPU}, which sometimes have thousands of cores, might be magnitudes faster and could easily replace the current worker.
 
-  The \textit{network} code was put in an adapter as some Android specific tweaks were expected. This turned out to be wrong, but it didn't slow down development and might facilitate a future rewrite of the network code, so it still seems to be a good desicion.
+  The \textit{network} code was put in an adapter as some Android specific tweaks were expected. This turned out to be wrong, but it didn't slow down development and might facilitate a future rewrite of the network code, so it still seems to be a good decision.
 
   The \textit{cryptography} adapter is a fine example why you should never rely on static helper classes. Rewriting the code to use an adapter was a pain and it wouldn't have been complicated to do it right the first time.
 
@@ -180,7 +185,7 @@
 
   \includegraphics[width=\textwidth]{images/command.pdf}
 
-  The \textbf{magic} is a number to mark the beginning of a command. It is set to \texttt{0xE9BEB4D9}, but \textit{could} be changed for test clients so they can't connect to the real network.
+  The \textbf{magic} is a number to mark the beginning of a command. It is always \texttt{0xE9BEB4D9}, but \textit{could} be changed for test clients so they can't connect to the real network.
 
   A \textbf{command} defines how the payload looks like and what the node is supposed to do with it. The commands used by the Bitmessage protocol are \textit{version}, \textit{verack}, \textit{addr}, \textit{inv}, \textit{getdata} and \textit{object}. Their uses are specified in the Bitmessage Protocol Specification.\cite{wiki:protocol}
 
@@ -213,15 +218,19 @@
 
   Advantages of elliptic curves is the fact that we don't need to search for big primes, but also that the keys can be much smaller while having the same encryption strength.
 
+  In the following example, key pairs always use lowercase letters for private keys and the same letter in upper case for public keys. This corresponds to the convention of using lowercase letters for scalars and uppercase letters for points.
+
+TODO: try to find a graphic enlightening the key exchange
+
   The user, let's call her Alice, needs a key pair, consisting of a private key
 $$k$$
 which represents a huge random number, and a public key
 $$K = G k$$
 which represents a point on the agreed on curve -- by default that's \textit{secp256k1} for Bitmessage. Please note that this is not a simple multiplication, but the multiplication of a point along an elliptic curve. $G$ is the starting point for all operations on a specific curve.
 
-  Another user, Bob, knows the public key. To encrypt a message, Bob creates a temporary key pair
+  Another user, Bob, knows the public key. To encrypt a message, Bob creates a temporary key pair with private key
 $$r$$
-and
+and public key
 $$R = G r$$
 He then calculates
 $$K r$$
@@ -284,7 +293,7 @@ do {
   \label{subsec:bcvssc}
   Jabit heavily relies on Bouncy Castle, a very popular open source encryption library.\cite{bouncy} Sadly, Android ships with a broken version of Bouncy Castle. Even worse, when building an Android app, the toolchain just discards any Bouncy Castle dependencies in favour of the built-in, broken version.
 
-  Some people recognised this problem, and built a fork of Bouncy Castle, called Spongy Castle. It basically just replaces “Bouncy” with “Spongy” wherever necessary, so it doesn’t get discarded during the build process. This works fine and is quite easily done. Unfortunately, it doesn’t work on the Desktop.
+  Some people recognised this problem, and built a fork of Bouncy Castle, called Spongy Castle. It basically just replaces “Bouncy” with “Spongy” wherever necessary, so it doesn’t get discarded during the build process. This works fine and is quite easily done. Unfortunately, it doesn’t work on the desktop.
 
   The Oracle JVM requires Security Providers to be signed, which is done for Bouncy Castle builds, but not so for the Spongy derivation. As forking Jabit wasn’t an option, the whole cryptography part had to be refactored into an exchangeable module and implemented twice, in both a bouncy and a spongy manifestation.
 
@@ -330,10 +339,16 @@ do {
 
   It was decided to run all services as separate threads in the same process, which simplifies communication between those services, but has the risk of the whole app crashing if there is an error in a service.
 
-  \subsection{Play Store}
-  Unfortunately, even 
+  \subsection{Deprecated Java Versions}
+  Jabit uses many features from Java 7, such as \textit{try-with-resources} and \texttt{java.util.Objects}. Testing with older devices revealed that those features are only available on Android 4.4 `KitKat' and later.
 
-  TODO
+  \begin{center}
+    \includegraphics[width=0.6\textwidth]{images/android_version_chart_dec_2015.png}
+  \end{center}
+
+  As this would have meant a tedious search for the use of these features and their rewrite, it was decided to raise the system requirements from Android 4.0 `Ice Cream Sandwich' to 4.4 `KitKat' instead. This means that instead of 96.4\% of the devices, the app now only runs on 66.6\% of the devices that are actively using Google Play\texttrademark{}.\cite{da:dashboards}
+
+  The Android development environment provides useful help to prevent such problems, but not if they originate from depending libraries such as Jabit.
 
 
   \newpage
@@ -411,6 +426,14 @@ do {
     \includegraphics[width=0.8 \textwidth]{images/screenshot_settings.png}
   \end{center}
 
+  If \textit{Wi-Fi only} is selected, Abit will not synchronize unless its connected to a Wi-Fi network. If you try to start a full node in this mode, you will be warned and asked if you want to continue. It is on by default in order to protect the user from using up his data plan.
+
+  The \textit{trusted node} is needed for the synchronisation feature to work (receiving messages while not being a `full node').
+
+  Synchronisation will stop trying to fetch object if \textit{synchronization timeout} is reached. This is a safety measure so it doesn't keep running if there's a problem, but might keep you from quickly getting all objects when the client runs for the first time.
+
+  If \textit{server POW} is active, all \ac{POW} will be done on the server. Please note that if there is a problem on the server, \ac{POW} won't be done at all, and a server will only do \ac{POW} for you if your identity is registred as a allowed client. In case of errors, \ac{POW} will be done if the feature is turned off and the client is restarted, which you might have to do by force.
+
 
   \subsection{The Server Component}
   The server's source code can be found at \url{https://github.com/Dissem/Jabit-Server}
@@ -424,8 +447,8 @@ do {
 
 
   \newpage
-  \section{Comparison to Alternatives}
-  \subsection{E-Mail Gateway}
+  \section{Related Works}
+  \subsection{E-Mail Gateways}
   A free e-mail gateway can be found at \url{https://bitmessage.ch}.
 
   When using an e-mail gateway, you can use your preferred e-mail client, so we can assume that daily user experience is at least as good as with the native app. Setup isn't very complicated, but still not as easy as two taps for a new identity.
@@ -434,7 +457,7 @@ do {
 
 
   \subsection{Bitseal}
-  Bitseal isn't available on Google Play\texttrademark{} anymore, but its sources can be found on Github:\\
+  Bitseal isn't available on Google Play anymore, but its sources can be found on Github:\\
   \url{https://github.com/JonathanCoe/bitseal}\\
   It isn't actively being developed right now, and unfortunately the servers needed for it to work aren't currently running. It would be possible to set up a private server, but this is out of scope of this thesis.
 
@@ -450,11 +473,27 @@ do {
 
 
 
+  \newpage
+  \section{Future Work}
+  \subsection{Open Bugs}
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+  \subsection{Missing Features}
 
 
 
   \newpage
-  \section{Social and Ethical Consequences}
+  \section{Conclusion}
   
 
 
