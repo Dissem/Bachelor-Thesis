@@ -78,9 +78,9 @@
 
   \subsection{What is Metadata?}
 
-  Metadata is information about data we create or access. This could be the websites we visit, what tv programmes we watch, or the sender, recipient, time, which mail client was used, maybe even where it was sent from and what anti-virus is used. The volume and quality of metadata greatly depends on the kind of data and the software used to create it.
+  Metadata is information about data we create or access. This could be the websites we visit, what television programmes we watch, or with whom we communicate. The volume and quality of metadata greatly depends on the kind of data and the software that created it.
 
-  While encryption technology like \ac{PGP} or \acs{S/MIME} provides a secure way to protect content from prying eyes, it can't hide the header information: sender, recipient, subject and possibly much more.
+  While encryption technology like \ac{PGP} or \acs{S/MIME} provides a secure way to protect content from prying eyes, it can't hide the header information of an e-mail: sender, recipient, subject and possibly much more.
 
   Ever since the revelations of whistleblower Edward Snowden we learned that metadata --- most notably information about who communicates with whom --- is equally interesting and much easier to analyse than the actual content.\cite{guardian:metadata}
 
@@ -88,13 +88,15 @@
 
   With e-mail, all metadata is plain text, even for encrypted messages. We might be able to encrypt the connection to the e-mail provider, and they might or might not encrypt their connections to other providers. We can only hope that both our and the recipient's e-mail provider are both trustworthy and competent. Can we really expect that from something we get for free? And can we be sure they're not forced to release what they know to some agency?\cite{yale:nsl}
 
-  With Bitmessage we send a message to a sufficiently large number of participants, with the intended recipient among them. Content is encrypted such that only the person in possession of the private key can decrypt it. All participants try to do this in order to find their messages.
-
   \subsection{What is Bitmessage}
   
-  Bitmessage is a peer to peer protocol building a mesh network among the participating clients. Every client tries to maintain multiple connections to other network nodes and has a full copy of every current object.
+  With Bitmessage we send a message to a sufficiently large number of participants, among them the intended recipient. Content is encrypted such that only the person in possession of the private key can decrypt it. All participants try to do this in order to find their messages.
+
+  It is a peer to peer protocol building a mesh network among the participating clients. Every client tries to maintain multiple connections to other network nodes and has a full copy of every current object.
   
   Objects are encrypted using a public key. Every client tries to decrypt each object using its private keys, processing the ones where it succeeds.
+
+  Other that Bitcoin, Bitmessage does not have a block chain. This is a common misconception, as those protocols otherwise share many of their ideas.
 
   \subsubsection{Advantages}
   A big advantage of Bitmessage is its inherent key management. The address contains a hash of the public key, and retrieving said key is an integral part of the protocol.
@@ -104,22 +106,16 @@
   Finally, the setup is very easy. You just need to install a client software, there's no setup necessary except a click to create a new identity (i.e. Bitmessage address) if your client didn't do that when it started for the first time.
 
   \subsubsection{Disadvantages}
-  Of course the protocol uses a lot of resources. The traffic problem could be somewhat managed by splitting it into streams\cite{wiki:stream}, but the \ac{POW} is required in order to protect the network.
+  Of course the protocol uses a lot of resources. The traffic problem could be somewhat managed by splitting it into streams\cite{wiki:stream}, but \acf{POW}, an expensive operation, is required in order to protect the network.
 
-  As you might guess, the protocol doesn't scale well. As the user base grows and traffic increases, it might be too much for weaker clients (read mobile phones) to process. Again, streams are said to be the solution, but if there's a big surge in network usage the implementations might not be ready. Unfortunately for this project, a successful mobile client might be responsible for that surge.
+  As you might guess, the protocol doesn't scale well. As the user base grows and traffic increases, it might be too much for weaker clients (read mobile phones) to process. Again, streams are said to be the solution, but if there's a big surge in network usage the implementations might not be ready. Unfortunately for this project, a successful mobile client could cause such a surge.
 
   If somehow your private key gets into wrong hands, they might be able to read every message you ever received, even if you deleted them locally. Nobody can prevent an entity from collecting all encrypted objects just in case the might be of value some day. They can't read the messages you've \textit{sent} though, unless they got your recipient's private key as well.
 
-  On the usability side, the addresses aren't really human readable, and any method to make it look friendlier would either be complicated to set up or make the client insecure, or both. Then no client yet supports attachments, and there's still some controversy on how to implement them into the protocol. Large attachments wouldn't be possible anyway, due to message size restrictions and \ac{POW}.
+  On the usability side, the addresses aren't really human readable, and any method to make it look friendlier would most probably be either complicated to set up or make the client insecure, or both. Then most clients do not yet supports attachments, and there's still some controversy on how to implement them into the protocol. Large attachments wouldn't be possible anyway, due to message size restrictions and \ac{POW}.
 
   \subsubsection{Risks}
   As when you decide to use Tor, a software for enabling anonymous communication formerly known as `The Onion Router', you might be flagged by some security agency as a possible threat.\cite{wired:tor} By itself this isn't necessarily a problem, but if you're a journalist it might be a risk for your informants, and combined with oder red flags you might be prevented from flying in or into the U.S.A.
-
-  .
-
-  .
-
-  TODO
 
 
   \subsection{Motivation Behind this Thesis}
@@ -130,10 +126,10 @@
   We need mobile Bitmessage clients that allows the user to choose their levels of convenience, privacy and resource hunger. There will always be trade-offs between needed traffic, battery use and privacy, and for each user the answer might look slightly different.
 
   \subsubsection{Why is it hard to do?}
-  Bitmessage is very wasteful with resources by design. All messages are being sent to and stored on all nodes, and to protect the network \ac{POW} is required for all objects that are distributed, meaning some very \acs{CPU}-heavy calculations need to be done. The protocol wasn't developed with mobile users in mind, and while smartphones are getting increasingly powerful, there is at least the issue of battery use to watch out for, and many users have limited traffic on their data plan.
+  Bitmessage is very wasteful with resources by design. All nodes receive and store all messages, and to protect the network \ac{POW} is required for all objects that are distributed, meaning some very \acs{CPU}-heavy calculations need to be done. The protocol wasn't developed with mobile users in mind, and while smartphones are getting increasingly powerful, there is at least the issue of battery use to watch out for, and many users have a limited data plan.
 
   \subsubsection{Why me, and how do I intend to do it?}
-  I have seven years of experience developing Java applications, and was programming Android apps from the moment I had my ``Android Dev Phone 1''. As I developed Jabit, a Java implementation of the Bitmessage client, as my last project, I also have great knowledge about the Bitmessage protocol.
+  I have seven years of experience developing Java applications, and was programming Android apps from the moment I had my ``Android Dev Phone 1''. As I developed Jabit, a Java implementation of the Bitmessage client, as my last project, I also have acquired extensive knowledge about the Bitmessage protocol.
 
   There are a few optimisations that I intend to do:
   \begin{itemize}
@@ -150,22 +146,24 @@
     \item Inform the client about new messages sent to its addresses. This would mean to give up our anonymity towards the server in the best case (which isn't supported by the protocol yet), towards the whole network (which is somewhat supported), or give up the private key to the server (which, for many users, is unacceptable).
   \end{itemize}
 
-  To find out what is actually necessary, a naive impementation will be done first.
+  To find out what is actually necessary, a naive impementation without optimisations will be done first.
 
   \subsection{The Jabit Bitmessage Library}
   The source code for Jabit can be found at \url{https://github.com/Dissem/Jabit}
 
   Jabit has been developed as a preparing project for this thesis. It implements (most of) the Bitmessage protocol in Java and can therefore easily be used both for server applications as well as Android apps.
 
-  Almost all alternative clients are based on PyBitmessage, which is somewhat inconvenient as it always requires PyBitmessage to run along with the client. This isn't really a problem on desktop computers, but might render creating  an easily deployable server application slightly more difficult, and is quite impractical on mobile devices.
+  Almost all other clients are based on PyBitmessage, which is somewhat inconvenient as it always requires PyBitmessage to run along with the client. This isn't really a problem on desktop computers, but might render creating  an easily deployable server application slightly more difficult, and is quite impractical on mobile devices.
 
 
   \subsubsection{Architecture}
-  Jabit follows the Ports and Adapters architecture. There is a domain module which contains all the data types and most parts of the protocol implementation, and provides several ports, to which adapters can be attached. Adapters include the data repositories, \ac{POW}, network code and, more recently, cryptography (see \ref{subsec:bcvssc} \nameref{subsec:bcvssc}{}).
+  Jabit follows the Ports and Adapters architecture. There is a domain module which contains all the data types and most parts of the protocol implementation, and provides several ports, to which adapters can be attached. Ports and corresponding adapter implementations exist for data repositories, \ac{POW}, network code and, more recently, cryptography (see \ref{subsec:bcvssc} \nameref{subsec:bcvssc}{}).
 
   \begin{center}
     \includegraphics[width=0.5 \textwidth]{images/ports_and_adapters.pdf}
   \end{center}
+
+TODO: update image
 
   While there was hope to reuse the \acs{JDBC} implementation of the \textit{repositories}, it was clear that at some point someone might want to use a \acs{NoSQL} database or some other means of storage. Unfortunately, an Android specific implementation came first, as explained in section \ref{subsec:jdbc} \nameref{subsec:jdbc}.
 
@@ -218,7 +216,7 @@
 
   Advantages of elliptic curves is the fact that we don't need to search for big primes, but also that the keys can be much smaller while having the same encryption strength.
 
-  In the following example, key pairs always use lowercase letters for private keys and the same letter in upper case for public keys. This corresponds to the convention of using lowercase letters for scalars and uppercase letters for points.
+  In the following example, key pairs are represented by pairs of the same letter, lower case for the private key, and uppercase for public keys. This corresponds to the convention of using lowercase letters for scalars and uppercase letters for points.
 
 TODO: try to find a graphic enlightening the key exchange
 
@@ -234,7 +232,7 @@ and public key
 $$R = G r$$
 He then calculates
 $$K r$$
-uses the resulting Point to encrypt the message by calculating a double SHA-512 hash over the x-coordinate and sends $K$ along with the message.
+uses the resulting point to encrypt the message by calculating a double SHA-512 hash over the x-coordinate and sends $K$ along with the message.
 
   When Alice receives the message, she uses the fact that
 $$K r = G k r = G r k = R k$$
@@ -244,7 +242,9 @@ so she just uses $R k$ to decrypt the message.
 
   \subsection{Proof of Work}
   \label{subsec:pow}
-  While invented as an anti spam feature, in Bitmessage \acf{POW} is mainly used to protect the network. Any malicious party could otherwise overload the network with an immense amount of messages, preventing other messages from being distributed and filling the hard disks of the weaker nodes, practically disabling the whole network. Therefore an object is only distributed to other nodes if its proof of work is correct and its time to live isn't up.
+  While invented as an anti spam feature, Bitmessage uses \acf{POW} mainly to protect the network. Users can demand higher \ac{POW} for their identities as additional protection.
+
+  If not for \ac{POW}, any malicious party could overload the network with an immense amount of messages, preventing other messages from being distributed and filling the hard disks of the weaker nodes, practically disabling the whole network. Therefore an object is only distributed to other nodes if its proof of work is correct and its time to live isn't up.
 
   The difficulty is calculated through a linear function of message size and time to live, i.e. a long lived message or a large one is more expensive to send, in terms of computation time.
 $$ d = \frac{2^{64}}{n (l + \frac{t l}{2^{16}})} $$
@@ -255,11 +255,11 @@ $$ d = \frac{2^{64}}{n (l + \frac{t l}{2^{16}})} $$
 	t & time to live in seconds \\
 \end{tabular}
 
-  The virtual \textit{extra bytes} prevent flooding the network with a great number of extremely small objects by adding some minimal difficulty that's necessary to send a message.
+  The virtual \textit{extra bytes}, currently at least 1000, prevent flooding the network with a great number of extremely small objects by adding some minimal difficulty that's necessary to send a message.
 
   \textit{Time to live} can be up to 28 days, which is the default for \textit{pubkey} objects, but for normal messages two days are commonly used.
 
-  To do the \acl{POW}, a \acs{nonce} must be found such that the first eight bytes of the object's hash (including \acs{nonce}) represent a smaller number than the target difficulty $d$.\\
+  As \acl{POW}, the client must find a \acs{nonce} such that the first eight bytes of the object's hash (including \acs{nonce}) represent a smaller number than the target difficulty $d$.\\
 
 \begin{lstlisting}
 byte[] nonce = new byte[8]
@@ -278,7 +278,7 @@ do {
   \listinginfo{}{lt(a, b)}{a helper method that takes the first eight bytes of both arrays and returns \texttt{true} if the ones from $a$ represent a smaller number than the ones from $b$ and \texttt{false} otherwise}{}
   \listinginfo{}{+}{in this context, a concatenation of both arrays is meant}{[1, 2] + [3, 4] = [1, 2, 3, 4]}
 
-  Note that this snipplet of pseudo code is optimised for readability. In a production implementation the loop should be as optimised (for speed) as possible, as it will be run so many times every nanosecond counts.
+  Note that this snipplet of pseudo code is optimised for readability. In a production implementation the loop should be as optimised (for speed) as possible, as it will be run so many times every nanosecond counts. Object creation and expensive conversions should carefully be avoided.
 
 
   \newpage
@@ -293,25 +293,25 @@ do {
   \label{subsec:bcvssc}
   Jabit heavily relies on Bouncy Castle, a very popular open source encryption library.\cite{bouncy} Sadly, Android ships with a broken version of Bouncy Castle. Even worse, when building an Android app, the toolchain just discards any Bouncy Castle dependencies in favour of the built-in, broken version.
 
-  Some people recognised this problem, and built a fork of Bouncy Castle, called Spongy Castle. It basically just replaces “Bouncy” with “Spongy” wherever necessary, so it doesn’t get discarded during the build process. This works fine and is quite easily done. Unfortunately, it doesn’t work on the desktop.
+  Roberto Tyley recognised this problem and built a fork of Bouncy Castle, called Spongy Castle.\cite{spongy} It basically just replaces “Bouncy” with “Spongy” wherever necessary, so it doesn’t get discarded during the build process. This works fine and is quite easily done. Unfortunately, it doesn’t work on the desktop: the Oracle JVM requires Security Providers to be signed, which is done for Bouncy Castle builds, but not so for the Spongy derivation.
 
-  The Oracle JVM requires Security Providers to be signed, which is done for Bouncy Castle builds, but not so for the Spongy derivation. As forking Jabit wasn’t an option, the whole cryptography part had to be refactored into an exchangeable module and implemented twice, in both a bouncy and a spongy manifestation.
+  As forking Jabit wasn’t an option, the whole cryptography part had to be refactored into an exchangeable module and implemented twice, in both a bouncy and a spongy manifestation.
 
   \subsubsection{JDBC}
   \label{subsec:jdbc}
-  Android has its own API to access the included SQLite database. While it’s a nice, easy to use \ac{API}, the Android team didn’t deem it necessary to support \ac{JDBC}, which is the Java standard API to connect to databases.
+  Android has its own \ac{API} to access the included SQLite database. While it’s a nice, easy to use \ac{API}, the Android team didn’t deem it necessary to support \acs{JDBC}, which is the Java standard API to connect to databases.
 
   There is an open source project attempting to implement a \ac{JDBC} driver for Android’s SQLite database called SQLDroid, which looked very promising. But as it turned out, it lacks essential features, such as returning the automatically generated key of an inserted row. It doesn't even have the courtesy of throwing a NotImplementedException for missing features, instead it just doesn't do anything and returns \textit{null} where a result is required, making debugging unnecessarily tedious.\cite{github:sqldroid}
 
-  Discovering SQLDroid was unfit for the job finally took more time than reimplementing all repositories using the Android database API. As they were already implemented as adapters, no change was necessary on the Jabit library. Many changes were made in the futile attempt to use JDBC though, most of them only to be reverted later on.
+  Discovering SQLDroid was unfit for the job finally took more time than reimplementing all repositories using the Android database API. As the necessary ports already existed, the Jabit library could be left unchanged. Yet the futile attempt to use JDBC caused many adjustments, most of them only to be reverted later on.
 
   \subsection{Expected Problems}
-  Those problems were to be expected and need to be examined and possibly fixed as part of this thesis.
+  There were a few problems we actually expected. They need to be examined and possibly fixed as part of this thesis.
 
   \subsubsection{Proof of Work}
-  Although modern smartphones tend to have faster processors than cheap personal computers, \ac{POW} for sending a public key takes more than 15 minutes on a device with four cores at 2.5 GHz. Even worse, during this time it uses so much power that the device discharges even when connected to a power supply.
+  Although modern smartphones tend to have faster processors than cheap personal computers, \acf{POW} for sending a public key takes more than 15 minutes on a device with four cores at 2.5 GHz. Even worse, during this time it uses so much power that the device discharges even when connected to a power supply.
 
-  But as it used the default time to live of 28 days, cutting it down to two days shortened that time to a much more acceptable 1-2 minutes. Weaker devices still want to rely on a server to do their \ac{POW}, but for stronger devices and more paranoid people it might be a viable option.
+  But as it used the default time to live of 28 days, cutting it down to two days shortened that time to a much more acceptable 1-2 minutes. Weaker devices still want to rely on a server to do their \ac{POW}, but for more privacy conscious people and those with stronger devices it is a viable option to do it on the mobile.
 
   \subsubsection{Data Traffic}
   Not creating a full node that also distributes the objects it receives certainly reduces the necessary internet traffic, but a Bitmessage client still needs to download around 1 GiB of incoming objects each month.
@@ -325,7 +325,7 @@ do {
   \subsubsection{Storage}
   Limited storage isn't as big a problem as initially expected, experience showed that just barely over 100 MiB is used, wich isn't a problem on current smartphones.
 
-  It shouldn't be too difficult to implement an option not to store any objects we don't need, but it certainly isn't a priority.
+  It shouldn't be too difficult to implement an option not to store any object data we don't need, but it certainly isn't a priority.
 
 
   \newpage
@@ -356,9 +356,9 @@ do {
   \subsection{Sync Adapters}
   Android provides an API that can vastly reduce battery usage for apps that regularly update data over the internet. The system triggers synchronisation, so it can optimise its sleep modes. As it knows when the network access is done it can put the radio back to sleep immediately, unlike other kinds of network access where the system stays connected for some time in case a new connection needs to be established.
 
-  Imagine five apps synchronising every five minutes, one after the other. In the worst case scenario the radio would need to wake up every minute, synchronize and could barely go back to sleep before the next app wants to synchronize.
+  Imagine five apps synchronising every five minutes, one after the other. In the worst case scenario the radio would need to wake up every minute, synchronize and could barely go back to sleep before the next app wants to synchronize. With the sync adapter the system triggers synchronisation for all five apps and when all are done it can put the radio back to sleep.
 
-  Although it's not intended, synchronisation can be done without any modifications to the Bitmessage protocol. What we need is a trusted node that is always available and therefore best run on a proper server. On successful connection all new messages are being exchanged, so we just need to connect, wait until new messages were exchanged, and then disconnect.
+  Although it's not intended, synchronisation can be done without any modifications to the Bitmessage protocol. What we need is a trusted node that is always available and therefore best run on a proper server. On successful connection the protocol exchanges all new messages, so we just need to connect, wait until new messages were exchanged, and then disconnect.
 
   As Jabit is a Java library, it was trivial to create a server application using Spring Boot and Jabit. It turned out though that it's necessary to limit the number of connections in a Bitmessage server, therefore connections are now being severed after 12 hours or when a limit of 100 connections is reached.
 
@@ -366,7 +366,7 @@ do {
   To reduce power consumption and possibly reduce the time to send a message, \ac{POW} can be calculated by the synchronisation server. This feature needs some changes on both server and client, and some custom extensions to the protocol.
 
   \subsubsection{Initial Idea}
-  The server accepts messages without \ac{POW}, which it will compute and fill in, and then relay that message. Of course this would leave the server extremely vulnerable to \ac{DOS} attacks -- an attacker could just send a bunch of messages and the server would be busy the rest of its life.
+  We first wanted the server to accept messages without \ac{POW}, which it will compute and fill in, and then relay that message. Of course this would leave the server extremely vulnerable to \ac{DOS} attacks -- an attacker could just send a bunch of messages and the server would be busy the rest of its life.
 
   Fortunately, Bitmessage has very secure authentication built in: every message is signed by a private key, and can be securely verified by anyone who knows the sender's address. We'll just send a message to the server that contains the actual message as content. All nonce fields are set to zero. Ther server checks if the sender is on a white list and then calculates the nonce and relays the complete message.
 
@@ -382,7 +382,7 @@ do {
   \subsubsection{\ac{POW} Protocol}
   Much of the planned design can be reused -- the encryption used by broadcasts, signing the messages -- but we need a wholly separate protocol, with some extra roundtrips to the server. Now the server just receives the parts needed for \ac{POW} calculation: a hash and a target value.
 
-  When the nonce is found, it's saved on the database. The client will regularly poll for it (e.g. during synchronization cycles) until it retrieves the nonce.
+  When the nonce is found, it's saved on the database. The client will regularly poll for it (e.g. during synchronization cycles) until it retrieves the nonce. A great benefit of this method is the possibility to implement it as an adapter.
 
   \includegraphics[width=\textwidth]{images/server_pow_protocol.pdf}
 
@@ -394,12 +394,14 @@ do {
 
   The payload always consists of the initial hash (the base for \ac{POW} calculation) and the kind of request or response. The data field contains the target difficulty for the \texttt{CALCULATE} request, and the calculated nonce for the \texttt{COMPLETE} response. For the \texttt{CALCULATING} response data is an emtpy array.
 
+  \texttt{CALCULATE} is also used to poll the server. This has the benefit that if there is a temporary problem on the server, it will automatically start \ac{POW} calculation when the server is ready again.
+
 
   \newpage
   \section{Artefacts}
 
   \subsection{The App}
-  The app's source code can be found at \url{https://github.com/Dissem/Abit}
+  You can find the app's source code at \url{https://github.com/Dissem/Abit}
 
   \subsubsection{User Interface}
   Abit tries to imitate state of the art e-mail clients. Users of Android's stock mail client should feel right at home.
@@ -408,7 +410,7 @@ do {
     \includegraphics[width=0.4 \textwidth]{images/screenshot_drawer_menu.png}
   \end{center}
 
-  A curiosity might be the `full node' switch at the bottom of the side drawer, which toggles a fully functioning Bitmessage node. As this uses a lot of traffic, the user is warned by default if they activate it on the mobile network.
+  A curiosity might be the `full node' switch at the bottom of the side drawer, which toggles a fully functioning Bitmessage node. As this uses a lot of traffic, the user is warned by default if they activate it on the mobile network. (Toggled via `Wi-Fi only' option in the settings.)
 
   \begin{center}
     \includegraphics[width=0.4 \textwidth]{images/screenshot_warning_dialog.png}
@@ -426,13 +428,13 @@ do {
     \includegraphics[width=0.8 \textwidth]{images/screenshot_settings.png}
   \end{center}
 
-  If \textit{Wi-Fi only} is selected, Abit will not synchronize unless its connected to a Wi-Fi network. If you try to start a full node in this mode, you will be warned and asked if you want to continue. It is on by default in order to protect the user from using up his data plan.
+  If \textit{Wi-Fi only} is selected, Abit will not synchronize unless its connected to a Wi-Fi network. If you try to start a full node in this mode, you will be warned and asked if you want to continue. It is switch on by default in order to protect the user from using up his data plan.
 
   The \textit{trusted node} is needed for the synchronisation feature to work (receiving messages while not being a `full node').
 
-  Synchronisation will stop trying to fetch object if \textit{synchronization timeout} is reached. This is a safety measure so it doesn't keep running if there's a problem, but might keep you from quickly getting all objects when the client runs for the first time.
+  Synchronisation will stop trying to fetch object when the \textit{synchronization timeout} is reached. This is a safety measure so it doesn't stay connected indefinitely if there's a problem, but might keep you from quickly getting all objects when the client runs for the first time.
 
-  If \textit{server POW} is active, all \ac{POW} will be done on the server. Please note that if there is a problem on the server, \ac{POW} won't be done at all, and a server will only do \ac{POW} for you if your identity is registred as a allowed client. In case of errors, \ac{POW} will be done if the feature is turned off and the client is restarted, which you might have to do by force.
+  If \textit{server POW} is active, all \ac{POW} will be done on the server. Please note that if there is a problem on the server, \ac{POW} won't be done at all, and a server will only do \ac{POW} for you if your identity is registred as an accepted client. In case of errors, \ac{POW} will be done if the feature is turned off and the client is restarted, which you might have to do by force.
 
 
   \subsection{The Server Component}
@@ -441,7 +443,9 @@ do {
   For the app to be really useful, it relies on a server component. If you don't require the \ac{POW} feature it could be any Bitmessage client that can be accessed over a known \acs{IP} address or host name, but the provided server application is very easy to deploy and, as mentioned, can do \ac{POW} for the mobile client.
 
   \subsection{Installation}
+  You can simply run \texttt{java -jar jabit-server.jar}. By default the server will provide a web interface on port 8080 and listen for Bitmessage connections on port 8444.
 
+  TODO lists etc.
 
   \subsubsection{Configuration}
 
