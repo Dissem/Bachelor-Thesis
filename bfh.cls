@@ -79,6 +79,8 @@
 
 \renewcommand{\familydefault}{\sfdefault}
 
+\renewcommand{\labelitemii}{\labelitemi}
+
 %\let\oldtoc\tableofcontents
 %\renewcommand{\tableofcontents} {
 %	\oldtoc

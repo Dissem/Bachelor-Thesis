@@ -40,6 +40,7 @@
     \acro{DOS}    {denial of service}
     \acro{nonce}  {number used once}
     \acro{IP}     {internet protocol}
+    \acro{REST}   {representational state transfer}
   \end{acronym}
 
 
@@ -442,13 +443,48 @@ do {
 
   For the app to be really useful, it relies on a server component. If you don't require the \ac{POW} feature it could be any Bitmessage client that can be accessed over a known \acs{IP} address or host name, but the provided server application is very easy to deploy and, as mentioned, can do \ac{POW} for the mobile client.
 
+  The server also provides a \acs{REST} \ac{API} and a web interface, but as they didn't have any priority they don't work properly.
+
   \subsection{Installation}
   You can simply run \texttt{java -jar jabit-server.jar}. By default the server will provide a web interface on port 8080 and listen for Bitmessage connections on port 8444.
 
-  TODO lists etc.
-
   \subsubsection{Configuration}
+  Five configuration files will be created if they don't exist yet. If you modify them by hand, a restart will be required to apply the changes. The files may contain Bitmessage addresses with different meanings.
 
+  \listinginfo{}{admins.config}{Addresses in this list are allowed to administrate the server.}{}
+  \listinginfo{}{clients.config}{Addresses in this list are allowed to request \ac{POW}}{}
+
+  \vspace{5mm}
+  The other three files concern the \acs{REST} \ac{API}:
+
+  \listinginfo{}{whitelist.config}{If there are any entries, only those addresses can be requested.}{}
+  \listinginfo{}{blacklist.config}{Those addresses can't be requested.}{}
+  \listinginfo{}{shortlist.config}{For those addresses, only the last five broadcasts will be shown}{}
+
+  \vspace{5mm}
+  The configuration files can also be changed by a registered administrator, through sending a message with subject \textit{<command> <list>} and a list of addresses in the body, each on a separate line. The commands are
+
+  \listinginfo{}{set}{replaces the list with the body content}{}
+  \listinginfo{}{add}{adds the given addresses to the list}{}
+  \listinginfo{}{remove}{removes the given addresses from the list}{}
+
+  \vspace{5mm}
+  Example:
+
+  \listinginfo{}{Subject}{add client}{}
+  \listinginfo{}{Body}{BM-2cUau5uxBYCK2Z2TVwUZnnNfYW5yyutekC\par{}
+                       BM-2cXDjKPTiWzeUzqNEsfTrMpjeGDyP99WTi}{}
+  \vspace{5mm}
+  Adds those two addresses as clients to allow \ac{POW} requests.
+
+  As it is a Spring Boot application, the file \texttt{application.properties} is used for all other configurations. The most important ones are:
+
+  \attachlisting{application.properties}
+  \listinginfo{1}{server.port}{On this port the server listens to HTTP requests}{}
+  \listinginfo{2}{server.address}{Is probably either 0.0.0.0, where the server listens on all interfaces, or 127.0.0.1 if you want to disable the web interface or route it through a web server.}{}
+  \listinginfo{4}{bitmessage.port}{On this port the server listens to incoming Bitmessage connections, e.g. from Abit users but also from random nodes.}{}
+  \listinginfo{5}{bitmessage.connection.ttl.hours}{The maximal time a client is allowed to stay connected to the server.}{}
+  \listinginfo{6}{bitmessage.connection.limit}{The maximum number of connections allowed for the server. If there are more connections, the oldest ones will be severed.}{}
 
   \newpage
   \section{Related Works}
@@ -472,27 +508,33 @@ do {
 
   \subsubsection{Settings}
   \subsubsection{Power Usage}
-
-
-
+  A test showed that Bitseal used about 30\% of the device's power throughout the day. In synchronization mode, Jabit uses less than 2\% over the same period. When Jabit ran as a full node however, it would have hardly lasted until noon.
 
 
   \newpage
   \section{Future Work}
-  \subsection{Open Bugs}
-.
-
-.
-
-.
-
-.
-
-.
-
-.
+  \subsection{Known Bugs}
+  \begin{itemize}
+    \item Drafts aren't stored
+    \item There is some issue with either requesting or sending the public key
+    \item A rare rendering error exists where different lists of messages are being drawn over each other
+    \item The server's user interface doesn't work
+    \item There is still no icon!
+  \end{itemize}
 
   \subsection{Missing Features}
+  \begin{itemize}
+    \item The user interface for sending broadcasts is still missing
+    \item Identities:
+      \begin{itemize}
+        \item rename
+        \item show as QR code
+        \item share or copy to clipboard
+        \item import and export
+      \end{itemize}
+    \item Custom labels
+    \item Jabit doesn't support acknowledgements yet
+  \end{itemize}
 
 
 
