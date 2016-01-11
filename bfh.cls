@@ -79,8 +79,6 @@
 
 \renewcommand{\familydefault}{\sfdefault}
 
-\renewcommand{\labelitemii}{\labelitemi}
-
 %\let\oldtoc\tableofcontents
 %\renewcommand{\tableofcontents} {
 %	\oldtoc
@@ -97,7 +95,7 @@
         \setlength{\TPVertModule}{\textheight} 
         %
         % BFH Logo
-        \includegraphics[scale=1.25]{images/logo.pdf}
+        \includegraphics[scale=1.0]{images/logo.png}
         %
         % Linien
         \begin{textblock}{1}[0,0](0,0)
@@ -267,11 +265,13 @@ morekeywords={Server, Listener, GlobalNamingResources,
 \RequirePackage{listings}
 \definecolor{BackgroundBlue}{cmyk}{0.05,0,0,0}
 
-\let\olditemize=\itemize
-\def\itemize{
-	\olditemize
-	\setlength{\itemsep}{-1.5ex}
-}
+%\let\olditemize=\itemize
+%\def\itemize{
+%	\olditemize
+%	\setlength{\itemsep}{-1.5ex}
+%}
+\renewcommand{\labelitemii}{\labelitemi}
+
 
 \newcommand{\leadingzero}[1]{\ifnum #1<10 0\the#1\else\the#1\fi}
 %YYYY-MM-DD

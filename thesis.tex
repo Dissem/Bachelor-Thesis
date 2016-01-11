@@ -1,4 +1,4 @@
-\documentclass{bfh}
+	\documentclass{bfh}
 \usepackage[numbers]{natbib}
 \usepackage[nohyperlinks]{acronym}
 \usepackage[labelformat=empty]{caption}
@@ -8,7 +8,7 @@
 \title{Bachelor Thesis}
 \subtitle{An Android Client for Bitmessage}
 \author{Christian Basler}
-\advisor{Kai Brünnler}
+\advisor{Dr. Kai Brünnler}
 \expert{Daniel Voisard}
 \date{\today}
 
@@ -25,10 +25,10 @@
 
   \section*{Abbreviations}
   \begin{acronym}[S/MIME ]
+    \acro{POW}    {proof of work}
     \acro{CPU}    {central processing unit}
     \acro{GPU}    {graphics processing unit}
     \acro{VM}     {virtual machine}
-    \acro{POW}    {proof of work}
     \acro{OS}     {operating system}
     \acro{PGP}    {Pretty Good Privacy}
     \acro{MIME}   {multipurpose internet mail extensions}
@@ -53,15 +53,17 @@
 
   Bitmessage is a peer to peer messaging protocol that builds a mesh network among the participating clients. Each client tries to maintain multiple connections to other network nodes and has an encrypted copy of every current message.
 
-  There are some unique challenges for mobile clients. Its users are very privacy conscious. The protocol needs both huge amounts of traffic and a lot of \acs{CPU} time. It works by distributing every message to every client, so they can pick up the ones they can decrypt with the available private keys.
+  There are some unique challenges for mobile clients. For one, its users are very privacy conscious. Also, the protocol needs both huge amounts of traffic and a lot of \acs{CPU} time.
+
+  It works by distributing every message to every client, so they can pick up the ones they can decrypt with the available private keys.
 
   To protect the network from malicious flooding, clients must find a partial hash collision as \acl{POW} in order to send a message. This is designed to be relatively slow even on desktop computers.
 
   So typically you'd want as many \acs{CPU} cores as possible, no shortage of power and a flat rate on internet access – a challenge for a mobile app.
 
-  Android\texttrademark{} has some challenges, too. To preserve resources, the \acl{OS} might kill any process at any time, especially those in the background that process incoming network objects. Then there are some major Java dependencies missing in the Android \acs{VM}, most notably \acs{JDBC}, used for accessing databases. And finally, the devices differ vastly processing power. The implementation we propose solves these problems.
+  Android\texttrademark{} has some challenges, too. To preserve resources, the \acl{OS} might kill any process at any time, especially those in the background that process incoming network objects. Then there are some major Java dependencies missing in the Android \acs{VM}, most notably \acs{JDBC}, used to access databases. And finally, the devices differ vastly processing power. The implementation we propose solves these problems.
 
-  In addition there were two optional optimisations that require a server. First, Android provides a highly optimized method to synchronize data with a server, which we leveraged while still using the official Bitmessage protocol. Secondly, an option to let a server do the \acl{POW} was added for weaker phones. For both options the user must give up some of his anonymity towards the server --- it's their choice.
+  In addition there were two optional optimisations that require a server. First, Android provides a highly optimized method to synchronize data with a server, which we leveraged while still using the official Bitmessage protocol. Secondly, an option to let a server do the \acl{POW} was added for weaker phones. For both options the user must give up some of his anonymity towards the server --- the choice is theirs.
 
   You can get more information about the app at \url{https://dissem.ch/abit}
 
@@ -111,12 +113,12 @@
 
   As you might guess, the protocol doesn't scale well. As the user base grows and traffic increases, it might be too much for weaker clients (read mobile phones) to process. Again, streams are said to be the solution, but if there's a big surge in network usage the implementations might not be ready. Unfortunately for this project, a successful mobile client could cause such a surge.
 
-  If somehow your private key gets into wrong hands, they might be able to read every message you ever received, even if you deleted them locally. Nobody can prevent an entity from collecting all encrypted objects just in case the might be of value some day. They can't read the messages you've \textit{sent} though, unless they got your recipient's private key as well.
+  If somehow your private key gets into wrong hands, they can read every message you ever received, even if you deleted them locally. Nobody can prevent an entity from collecting all encrypted objects just in case they might be of value some day. They can't read the messages you've \textit{sent} though, unless they got your recipient's private key as well.
 
   On the usability side, the addresses aren't really human readable, and any method to make it look friendlier would most probably be either complicated to set up or make the client insecure, or both. Then most clients do not yet supports attachments, and there's still some controversy on how to implement them into the protocol. Large attachments wouldn't be possible anyway, due to message size restrictions and \ac{POW}.
 
   \subsubsection{Risks}
-  As when you decide to use Tor, a software for enabling anonymous communication formerly known as `The Onion Router', you might be flagged by some security agency as a possible threat.\cite{wired:tor} By itself this isn't necessarily a problem, but if you're a journalist it might be a risk for your informants, and combined with oder red flags you might be prevented from flying in or into the U.S.A.
+  As when you decide to use Tor, a software for enabling anonymous communication formerly known as `The Onion Router', you could be flagged by some security agency as a potential threat.\cite{wired:tor} By itself this isn't necessarily a problem, but if you're a journalist it might put your informants at risk, and combined with oder red flags it's possible you are prevented from flying in or into the U.S.A.
 
 
   \subsection{Motivation Behind this Thesis}
@@ -150,7 +152,7 @@
   To find out what is actually necessary, a naive impementation without optimisations will be done first.
 
   \subsection{The Jabit Bitmessage Library}
-  The source code for Jabit can be found at \url{https://github.com/Dissem/Jabit}
+  The source code for Jabit is available at \url{https://github.com/Dissem/Jabit}
 
   Jabit has been developed as a preparing project for this thesis. It implements (most of) the Bitmessage protocol in Java and can therefore easily be used both for server applications as well as Android apps.
 
@@ -164,7 +166,7 @@
     \includegraphics[width=0.5 \textwidth]{images/ports_and_adapters.pdf}
   \end{center}
 
-TODO: update image
+TODO: improve image
 
   While there was hope to reuse the \acs{JDBC} implementation of the \textit{repositories}, it was clear that at some point someone might want to use a \acs{NoSQL} database or some other means of storage. Unfortunately, an Android specific implementation came first, as explained in section \ref{subsec:jdbc} \nameref{subsec:jdbc}.
 
@@ -174,6 +176,7 @@ TODO: update image
 
   The \textit{cryptography} adapter is a fine example why you should never rely on static helper classes. Rewriting the code to use an adapter was a pain and it wouldn't have been complicated to do it right the first time.
 
+TODO: interface names? UML Diagram?
 
   \newpage
   \section{The Bitmessage Protocol}
@@ -217,9 +220,15 @@ TODO: update image
 
   Advantages of elliptic curves is the fact that we don't need to search for big primes, but also that the keys can be much smaller while having the same encryption strength.
 
-  In the following example, key pairs are represented by pairs of the same letter, lower case for the private key, and uppercase for public keys. This corresponds to the convention of using lowercase letters for scalars and uppercase letters for points.
+  Addition on the curve means finding the point where the line through those points intersects with the curve, and then find its reflection on the x-axis. If you add a point to itself, you use the tangent instead. In the example, $G$ is multiplied by 3 by first adding $G+G$ and then $2G+G$, resulting in point $3G$.
 
-TODO: try to find a graphic enlightening the key exchange
+  \begin{center}
+    \includegraphics[width=0.5 \textwidth]{images/multiplication_on_elliptic_curve.pdf}
+  \end{center}
+
+  Obviously you can't find a line from just one point, so there is no way to calculate $P \over 3$, and $P \over G$ can only be found by searching all options, assuming $P = G n$, which holds true in elliptic curve cryptography.
+
+  In the following example, key pairs are represented by pairs of the same letter, lower case for the private key, and uppercase for public keys. This corresponds to the convention of using lowercase letters for scalars and uppercase letters for points.
 
   The user, let's call her Alice, needs a key pair, consisting of a private key
 $$k$$
@@ -239,7 +248,7 @@ uses the resulting point to encrypt the message by calculating a double SHA-512 
 $$K r = G k r = G r k = R k$$
 so she just uses $R k$ to decrypt the message.
 
-  The exact method used in Bitmessage is called Elliptic Curve Integrated Encryption Scheme or ECIES, which is described in detail on Wikipedia.\cite{wikipedia:ECC}\cite{wikipedia:ECIES}
+  The exact method used in Bitmessage is called Elliptic Curve Integrated Encryption Scheme or ECIES, which is described in detail on Wikipedia.\cite{wikipedia:EC}\cite{wikipedia:ECC}\cite{wikipedia:ECIES}
 
   \subsection{Proof of Work}
   \label{subsec:pow}
@@ -262,6 +271,8 @@ $$ d = \frac{2^{64}}{n (l + \frac{t l}{2^{16}})} $$
 
   As \acl{POW}, the client must find a \acs{nonce} such that the first eight bytes of the object's hash (including \acs{nonce}) represent a smaller number than the target difficulty $d$.\\
 
+  Note that the following snipplet of pseudo code is optimised for readability. In a production implementation the loop should be as optimised (for speed) as possible, as it will be run so many times every nanosecond counts. Object creation and expensive conversions should carefully be avoided.
+
 \begin{lstlisting}
 byte[] nonce = new byte[8]
 
@@ -277,9 +288,8 @@ do {
 
   \listinginfo{}{initialHash}{a single SHA-512 hash over the whole object except for the nonce}{}
   \listinginfo{}{lt(a, b)}{a helper method that takes the first eight bytes of both arrays and returns \texttt{true} if the ones from $a$ represent a smaller number than the ones from $b$ and \texttt{false} otherwise}{}
-  \listinginfo{}{+}{in this context, a concatenation of both arrays is meant}{[1, 2] + [3, 4] = [1, 2, 3, 4]}
-
-  Note that this snipplet of pseudo code is optimised for readability. In a production implementation the loop should be as optimised (for speed) as possible, as it will be run so many times every nanosecond counts. Object creation and expensive conversions should carefully be avoided.
+  \listinginfo{}{+}{in this context, a concatenation of both arrays}{[1, 2] + [3, 4] = [1, 2, 3, 4]}
+  \listinginfo{}{++}{an increment by one, treating the array as a number}{[1, 255]++ == [2, 0]}
 
 
   \newpage
@@ -320,7 +330,7 @@ do {
   The relatively crude solution to this problem is an option to prevent connecting to the mobile network.
 
   \begin{center}
-    \includegraphics[width=0.8 \textwidth]{images/screenshot_wifi_only_setting.png}
+    \includegraphics[width=0.8 \textwidth]{images/screenshots/wifi_only_setting.png}
   \end{center}
 
   \subsubsection{Storage}
@@ -401,32 +411,38 @@ do {
   \newpage
   \section{Artefacts}
 
-  \subsection{The App}
+  \subsection{App}
   You can find the app's source code at \url{https://github.com/Dissem/Abit}
 
   \subsubsection{User Interface}
   Abit tries to imitate state of the art e-mail clients. Users of Android's stock mail client should feel right at home.
 
   \begin{center}
-    \includegraphics[width=0.4 \textwidth]{images/screenshot_drawer_menu.png}
+    \begin{minipage}{.69\linewidth}
+      \includegraphics[width=1.0 \textwidth]{images/screenshots/drawer_menu_N9_framed.png}
+    \end{minipage}
+    \hspace{.05\linewidth}
+    \begin{minipage}{.24\linewidth}
+      \includegraphics[width=1.0 \textwidth]{images/screenshots/drawer_menu.png}
+    \end{minipage}
   \end{center}
 
-  A curiosity might be the `full node' switch at the bottom of the side drawer, which toggles a fully functioning Bitmessage node. As this uses a lot of traffic, the user is warned by default if they activate it on the mobile network. (Toggled via `Wi-Fi only' option in the settings.)
+  A curiosity might be the `full node' switch at the bottom of the side drawer, which toggles a fully functioning Bitmessage node. As this uses a lot of traffic, the user is warned if they activate it on the mobile network. (If `Wi-Fi only' is set in the settings, which is the default.)
 
   \begin{center}
-    \includegraphics[width=0.4 \textwidth]{images/screenshot_warning_dialog.png}
+    \includegraphics[width=0.4 \textwidth]{images/screenshots/warning_dialog.png}
   \end{center}
 
-  To both remind the user something resource hungry is going on and keep the process alive, an ongoing notification is being shown.
+  To both remind the user something resource hungry is going on and keep the process alive, ongoing notifications are being shown for long running tasks.
 
   \begin{center}
-    \includegraphics[width=0.4 \textwidth]{images/screenshot_notification_full_node.png}
+    \includegraphics[width=0.8 \textwidth]{images/screenshots/ongoing_notifications.png}
   \end{center}
 
   \subsubsection{Settings}
 
   \begin{center}
-    \includegraphics[width=0.8 \textwidth]{images/screenshot_settings.png}
+    \includegraphics[width=0.8 \textwidth]{images/screenshots/settings.png}
   \end{center}
 
   If \textit{Wi-Fi only} is selected, Abit will not synchronize unless its connected to a Wi-Fi network. If you try to start a full node in this mode, you will be warned and asked if you want to continue. It is switch on by default in order to protect the user from using up his data plan.
@@ -438,8 +454,8 @@ do {
   If \textit{server POW} is active, all \ac{POW} will be done on the server. Please note that if there is a problem on the server, \ac{POW} won't be done at all, and a server will only do \ac{POW} for you if your identity is registred as an accepted client. In case of errors, \ac{POW} will be done if the feature is turned off and the client is restarted, which you might have to do by force.
 
 
-  \subsection{The Server Component}
-  The server's source code can be found at \url{https://github.com/Dissem/Jabit-Server}
+  \subsection{Server}
+  The server's source code is available at \url{https://github.com/Dissem/Jabit-Server}
 
   For the app to be really useful, it relies on a server component. If you don't require the \ac{POW} feature it could be any Bitmessage client that can be accessed over a known \acs{IP} address or host name, but the provided server application is very easy to deploy and, as mentioned, can do \ac{POW} for the mobile client.
 
@@ -483,8 +499,8 @@ do {
   \listinginfo{1}{server.port}{On this port the server listens to HTTP requests}{}
   \listinginfo{2}{server.address}{Is probably either 0.0.0.0, where the server listens on all interfaces, or 127.0.0.1 if you want to disable the web interface or route it through a web server.}{}
   \listinginfo{4}{bitmessage.port}{On this port the server listens to incoming Bitmessage connections, e.g. from Abit users but also from random nodes.}{}
-  \listinginfo{5}{bitmessage.connection.ttl.hours}{The maximal time a client is allowed to stay connected to the server.}{}
-  \listinginfo{6}{bitmessage.connection.limit}{The maximum number of connections allowed for the server. If there are more connections, the oldest ones will be severed.}{}
+  \listinginfo{5}{bitmessage.connection.\\ttl.hours}{The maximal time a client is allowed to stay connected to the server.}{}
+  \listinginfo{6}{bitmessage.connection.\\limit}{The maximum number of connections allowed for the server. If there are more connections, the oldest ones will be severed.}{}
 
   \newpage
   \section{Related Works}
@@ -504,27 +520,65 @@ do {
   As it aims to be a full Bitmessage client as well, Bitseal is more diractly comparable to Abit.
 
   \subsubsection{User Interface}
-  Bitseal 
+  \begin{center}
+    \begin{minipage}{.3\linewidth}
+      \includegraphics[width=1.0 \textwidth]{images/screenshots/bitseal_inbox.png}
+    \end{minipage}
+    \hspace{.03\linewidth}
+    \begin{minipage}{.3\linewidth}
+      \includegraphics[width=1.0 \textwidth]{images/screenshots/bitseal_message.png}
+    \end{minipage}
+    \hspace{.03\linewidth}
+    \begin{minipage}{.3\linewidth}
+      \includegraphics[width=1.0 \textwidth]{images/screenshots/bitseal_contacts_add.png}
+    \end{minipage}
+  \end{center}
 
   \subsubsection{Settings}
+  \begin{center}
+    \begin{minipage}{.3\linewidth}
+      \includegraphics[width=1.0 \textwidth]{images/screenshots/bitseal_settings.png}
+    \end{minipage}
+    \hspace{.03\linewidth}
+    \begin{minipage}{.3\linewidth}
+      \includegraphics[width=1.0 \textwidth]{images/screenshots/bitseal_settings_export.png}
+    \end{minipage}
+    \hspace{.03\linewidth}
+    \begin{minipage}{.3\linewidth}
+      \includegraphics[width=1.0 \textwidth]{images/screenshots/bitseal_settings_system_tools.png}
+    \end{minipage}
+  \end{center}
+
+  The security settings let the user enable database encryption. This adds some security if the device is compromised.
+
+  The server settings lets the user add and remove servers. Other than Abit, Bitseal supports multiple servers to be set.
+
+  Import or export data lets the user export and import their private keys. While this is a planned feature for Abit, we prefer the wallet import format used by PyBitmessage rather than exporting the encryption and signing keys separately.
+
+  The system tools are very useful for debugging, sporting an option to view the log and recent errors, as well as restarting the background service.
+
   \subsubsection{Power Usage}
   A test showed that Bitseal used about 30\% of the device's power throughout the day. In synchronization mode, Jabit uses less than 2\% over the same period. When Jabit ran as a full node however, it would have hardly lasted until noon.
+
+TODO: more data
 
 
   \newpage
   \section{Future Work}
   \subsection{Known Bugs}
   \begin{itemize}
-    \item Drafts aren't stored
-    \item There is some issue with either requesting or sending the public key
-    \item A rare rendering error exists where different lists of messages are being drawn over each other
-    \item The server's user interface doesn't work
+    \item If a user tries to import their identity as a contact, the private key is deleted.
+    \item There is some issue with either requesting or sending the public key.
+    \item A rare rendering error exists where different lists of messages are being drawn on top of each other.
+    \item The server sometimes requests items we don't have during synchronisation.
+    \item The server's user interface doesn't work.
     \item There is still no icon!
   \end{itemize}
 
   \subsection{Missing Features}
   \begin{itemize}
-    \item The user interface for sending broadcasts is still missing
+    \item Drafts aren't stored.
+    \item The user interface for sending broadcasts is still missing.
     \item Identities:
       \begin{itemize}
         \item rename
@@ -532,15 +586,15 @@ do {
         \item share or copy to clipboard
         \item import and export
       \end{itemize}
-    \item Custom labels
-    \item Jabit doesn't support acknowledgements yet
+    \item Jabit doesn't support acknowledgements yet.
   \end{itemize}
 
 
 
   \newpage
   \section{Conclusion}
-  
+
+  TODO
 
 
 
@@ -554,7 +608,7 @@ do {
 
 
   \newpage
-  \bibliographystyle{plain}
+  \bibliographystyle{unsrt}
   \bibliography{bibliography}
 
 \end{document}

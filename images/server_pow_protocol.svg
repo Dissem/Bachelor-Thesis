@@ -131,15 +131,15 @@
          sodipodi:nodetypes="cccccc" />
       <text
          xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:15.58557701px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="333.11087"
+         style="font-style:normal;font-weight:normal;font-size:15.58557701px;line-height:125%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="373.65012"
          y="200.894"
          id="text4797"
          sodipodi:linespacing="125%"><tspan
            sodipodi:role="line"
            id="tspan4799"
-           x="333.11087"
-           y="200.894">calculating</tspan></text>
+           x="373.65012"
+           y="200.894">calculating [initial hash]</tspan></text>
     </g>
     <g
        id="g3619">
@@ -174,13 +174,13 @@
          sodipodi:linespacing="125%"
          id="text4847"
          y="307.07703"
-         x="351.82516"
-         style="font-style:normal;font-weight:normal;font-size:15.58557701px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="392.36441"
+         style="font-style:normal;font-weight:normal;font-size:15.58557701px;line-height:125%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"><tspan
            y="307.07703"
-           x="351.82516"
+           x="392.36441"
            id="tspan4849"
-           sodipodi:role="line">calculating</tspan></text>
+           sodipodi:role="line">calculating [initial hash]</tspan></text>
     </g>
     <g
        id="g3635">
