@@ -115,7 +115,7 @@
             \begin{vfill}
                 \begin{tabularx}{\textwidth}{lX}
                 \textsf{Author} & \@author\\ 
-                \textsf{Advisor}  & \@advisor\\
+                \textsf{Adviser}  & \@advisor\\
                 \textsf{Expert} & \@expert\\
 %                \textsf{Expert} & \textsf\DozentA\\
 %                \textsf{Studiengang} & \textsf{\Studiengang}\vspace{5pt}\\
