@@ -1,9 +1,10 @@
-	\documentclass{bfh}
+\documentclass{bfh}
 \usepackage[numbers]{natbib}
 \usepackage[nohyperlinks]{acronym}
 \usepackage[labelformat=empty]{caption}
 \usepackage[rightcaption]{sidecap}
 \usepackage{float}
+\usepackage{pdflscape}
 
 \title{Bachelor Thesis}
 \subtitle{An Android Client for Bitmessage}
@@ -160,13 +161,15 @@
 
 
   \subsubsection{Architecture}
-  Jabit follows the Ports and Adapters architecture. There is a domain module which contains all the data types and most parts of the protocol implementation, and provides several ports, to which adapters can be attached. Ports and corresponding adapter implementations exist for data repositories, \ac{POW}, network code and, more recently, cryptography (see \ref{subsec:bcvssc} \nameref{subsec:bcvssc}{}).
+  Jabit uses the Ports and Adapters pattern, also known as Hexagonal Architecture. This pattern isolates the core application from external dependencies. This vastly facilitates testing, as we can easily replace every dependency with mocks.
+
+  To achieve this isolation, we use adapters that encapsulate all necessary logic to communicate with an external dependency, e.g. a database. They communicate with the application via interfaces defined in the core module.
+
+  The core module contains all the data types and most parts of the protocol implementation. Ports and corresponding adapter implementations exist for data repositories, \ac{POW}, network code and, more recently, cryptography (see \ref{subsec:bcvssc} \nameref{subsec:bcvssc}{}).
 
   \begin{center}
-    \includegraphics[width=0.5 \textwidth]{images/ports_and_adapters.pdf}
+    \includegraphics[width=0.6 \textwidth]{images/ports_and_adapters.pdf}
   \end{center}
-
-TODO: improve image
 
   While there was hope to reuse the \acs{JDBC} implementation of the \textit{repositories}, it was clear that at some point someone might want to use a \acs{NoSQL} database or some other means of storage. Unfortunately, an Android specific implementation came first, as explained in section \ref{subsec:jdbc} \nameref{subsec:jdbc}.
 
@@ -176,7 +179,8 @@ TODO: improve image
 
   The \textit{cryptography} adapter is a fine example why you should never rely on static helper classes. Rewriting the code to use an adapter was a pain and it wouldn't have been complicated to do it right the first time.
 
-TODO: interface names? UML Diagram?
+  Adapter interfaces are all defined in package \texttt{ch.dissem.bitmessage.ports}.
+
 
   \newpage
   \section{The Bitmessage Protocol}
@@ -427,7 +431,7 @@ do {
     \end{minipage}
   \end{center}
 
-  A curiosity might be the `full node' switch at the bottom of the side drawer, which toggles a fully functioning Bitmessage node. As this uses a lot of traffic, the user is warned if they activate it on the mobile network. (If `Wi-Fi only' is set in the settings, which is the default.)
+  A curiosity might be the `full node' switch at the bottom of the side drawer, which toggles a fully functioning Bitmessage node. As this uses a lot of traffic, the user is warned if they activate it on the mobile network. (Provided `Wi-Fi only' is set in the settings, which is the default.)
 
   \begin{center}
     \includegraphics[width=0.4 \textwidth]{images/screenshots/warning_dialog.png}
@@ -570,7 +574,6 @@ TODO: more data
     \item If a user tries to import their identity as a contact, the private key is deleted.
     \item There is some issue with either requesting or sending the public key.
     \item A rare rendering error exists where different lists of messages are being drawn on top of each other.
-    \item The server sometimes requests items we don't have during synchronisation.
     \item The server's user interface doesn't work.
     \item There is still no icon!
   \end{itemize}
@@ -598,27 +601,16 @@ TODO: more data
   \newpage
   \section{Conclusion}
 
-  I'm quite proud of this app. It hardly ever turns up in the battery usage statistics, its data usage is under control and I think it looks quite nice, too. There is always room for improvements but it's time to test it on a broader audience.
+  I'm quite proud of this app. As long as you don’t start a full node it hardly ever turns up in the battery usage statistics, its data usage is under control and I think it looks quite nice, too. There is always room for improvements, but it's time to let a broader audience test it.
 
+  As often it wasn't the big questions that took the longest, nor the ones I expected. I've spent a lot of time exploring how to do things in a way that is both consistent with the Android ecosystem and keeps the code maintainable.
 
+  One lesson I learned the hard way: Never take shortcuts. The first mistake was using static methods for the cryptography. Then there are some changes to the Jabit library that I didn’t create proper tests for, and I fear they are just about to come back and haunt me.
+(TODO: more about this haunting…)
 
+.
 
-
-
-
-
-  A project like this is never quite done, it needs recurring attention. It was fun and fascinating work, but the real challenge will be finding people willing to contribute. If you feel intrigued by this thesis, please contact me.
-
-
-
-
-
-
-
-
-
-
-
+  A project like this is never quite done, it needs recurring attention. It was fun and fascinating work, but the real challenge will be finding people willing to contribute. So if you feel intrigued by this app, please contact me. Together we can make sure this project will survive.
 
 
   \newpage
